@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from .config import settings
-from .routes import generate_router, health_router, web_router
+from .routes import download_router, generate_router, health_router, web_router
 
 app = FastAPI(
     title="RegionGuard",
@@ -14,3 +14,4 @@ app.mount("/static", StaticFiles(directory=str(settings.static_dir)), name="stat
 app.include_router(web_router)
 app.include_router(generate_router)
 app.include_router(health_router)
+app.include_router(download_router)

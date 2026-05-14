@@ -69,6 +69,18 @@
           <p><strong>Report timing:</strong> {{ render.roe_report_timing }}</p>
         {% endif %}
       </section>
+
+      {% if download_files %}
+      <section class="panel panel--download">
+        <h2>Download generated documents</h2>
+        <ul>
+          {% for file in download_files %}
+            <li><a class="link-button" href="/download/docx/{{ file.name }}">{{ file.label }}</a></li>
+          {% endfor %}
+        </ul>
+        <p><a class="link-button" href="/download/package/{{ package_file }}">Download package (ZIP)</a></p>
+      </section>
+      {% endif %}
     </main>
 
     <footer class="footer">

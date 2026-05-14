@@ -27,7 +27,9 @@ RegionGuard is a minimal local-first cybersecurity engagement preparation toolki
 - `app/services/`: YAML loading, Jinja2 rendering, jurisdiction summaries, and render payload builder
 - `app/library/`: Local YAML data for jurisdictions, cloud providers, and rules of engagement
 - `app/templates/`: Jinja2 templates for the web UI and result page
-- `generated/`: Output folders for future DOCX/PDF generation
+- `app/services/docx_generator.py`: Professional DOCX document generation
+- `app/services/export_service.py`: ZIP packaging for generated deliverables
+- `generated/`: Output folders for DOCX and ZIP packages
 
 ## Features
 

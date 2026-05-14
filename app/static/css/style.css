@@ -96,6 +96,25 @@ button:hover {
   background: #163843;
 }
 
+.link-button {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #1f4653;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.link-button:hover {
+  background: #163843;
+}
+
+.link-button:focus {
+  outline: 2px solid #4fafe8;
+  outline-offset: 2px;
+}
+
 dl {
   margin: 0;
 }
