@@ -1,0 +1,12 @@
+name: AWS
+description: "AWS security guidance for shared responsibility and cloud-native control alignment."
+summary: "Use AWS native logging, identity controls, and network segmentation to reduce operational risk."
+shared_responsibility: "Customer secures workloads and data; AWS secures the underlying cloud infrastructure."
+security_controls:
+  - Identity and Access Management review
+  - VPC segmentation and flow logging
+  - CloudTrail and Config monitoring
+region_coverage:
+  - us-east-1
+  - eu-west-2
+  - ap-southeast-2

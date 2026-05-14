@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RegionGuard | Engagement Brief</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">RegionGuard Brief</p>
+        <h1>Engagement overview</h1>
+        <p>Review the briefing inputs and supporting guidance generated from regional and cloud documents.</p>
+      </div>
+    </header>
+
+    <main class="content-grid">
+      <section class="panel">
+        <h2>Client & scope</h2>
+        <dl>
+          <dt>Client</dt>
+          <dd>{{ render.client_name }}</dd>
+          <dt>Target</dt>
+          <dd>{{ render.target_type }}</dd>
+          <dt>Scope</dt>
+          <dd>{{ render.scope_text }}</dd>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2>Jurisdiction guidance</h2>
+        <p>{{ render.jurisdiction_overview }}</p>
+        <h3>Regulatory framework</h3>
+        <ul>
+          {% for framework in render.jurisdiction_frameworks %}
+            <li>{{ framework }}</li>
+          {% endfor %}
+        </ul>
+        <p class="note">Data residency: {{ render.jurisdiction_data_residency }}</p>
+      </section>
+
+      <section class="panel">
+        <h2>Cloud provider context</h2>
+        <p>{{ render.cloud_provider_summary }}</p>
+        <h3>Security controls</h3>
+        <ul>
+          {% for control in render.cloud_provider_controls %}
+            <li>{{ control }}</li>
+          {% endfor %}
+        </ul>
+        <p class="note">Region coverage: {{ render.cloud_provider_region_coverage | join(", ") }}</p>
+      </section>
+
+      <section class="panel panel--info">
+        <h2>Rules of engagement</h2>
+        <p>{{ render.roe_description }}</p>
+        <h3>Guidance</h3>
+        <ul>
+          {% for rule in render.roe_guidance %}
+            <li>{{ rule }}</li>
+          {% endfor %}
+        </ul>
+        {% if render.roe_scope_limitations %}
+          <p><strong>Scope limitations:</strong> {{ render.roe_scope_limitations }}</p>
+        {% endif %}
+        {% if render.roe_report_timing %}
+          <p><strong>Report timing:</strong> {{ render.roe_report_timing }}</p>
+        {% endif %}
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>RegionGuard does not provide legal advice.</p>
+    </footer>
+  </div>
+</body>
+</html>

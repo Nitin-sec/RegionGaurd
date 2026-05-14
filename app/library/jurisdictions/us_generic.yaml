@@ -1,0 +1,9 @@
+name: US Generic
+region: United States
+overview: "United States engagements are guided by federal privacy, sector controls, and a strong emphasis on accountability and evidence retention."
+regulatory_frameworks:
+  - NIST SP 800-53
+  - HIPAA
+  - PCI DSS
+data_residency: "Sensitive findings should remain within approved US-based secure storage and communications channels."
+reporting_requirements: "Provide a technical assessment with risk ratings and a business-ready executive summary."

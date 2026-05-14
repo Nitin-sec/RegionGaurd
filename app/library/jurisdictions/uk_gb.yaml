@@ -1,0 +1,9 @@
+name: UK (GB)
+region: United Kingdom
+overview: "UK engagements must meet GDPR and local data protection expectations while reflecting NCSC operational guidance."
+regulatory_frameworks:
+  - GDPR
+  - NCSC Cyber Assessment Framework
+  - ISO 27001
+data_residency: "All findings and evidence should be stored in compliance with UK data residency and protection standards."
+reporting_requirements: "Deliver a concise executive summary and a technical record aligned to UK legal controls."

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RegionGuard | Engagement Preparation</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">RegionGuard</p>
+        <h1>Cybersecurity engagement preparation</h1>
+        <p>Use local guidance and cloud context to generate a deterministic briefing for your next engagement.</p>
+      </div>
+    </header>
+
+    <main class="content-grid">
+      <section class="panel">
+        <h2>Engagement details</h2>
+        <form method="post" action="/generate">
+          <label for="client_name">Client name</label>
+          <input id="client_name" name="client_name" type="text" required maxlength="120" placeholder="Acme Security" />
+
+          <label for="jurisdiction">Jurisdiction</label>
+          <select id="jurisdiction" name="jurisdiction" required>
+            {% for jurisdiction in jurisdictions %}
+              <option value="{{ jurisdiction.key }}">{{ jurisdiction.label }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="engagement_type">Engagement type</label>
+          <select id="engagement_type" name="engagement_type" required>
+            {% for preset in roe_presets %}
+              <option value="{{ preset.key }}">{{ preset.label }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="target_type">Target type</label>
+          <input id="target_type" name="target_type" type="text" required maxlength="80" placeholder="Web application / cloud workload" />
+
+          <label for="cloud_provider">Cloud provider</label>
+          <select id="cloud_provider" name="cloud_provider" required>
+            {% for provider in cloud_providers %}
+              <option value="{{ provider.key }}">{{ provider.label }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="scope_text">Scope and objectives</label>
+          <textarea id="scope_text" name="scope_text" rows="8" required maxlength="1200" placeholder="Describe the assets and boundaries for the engagement."></textarea>
+
+          <button type="submit">Generate engagement brief</button>
+        </form>
+      </section>
+
+      <section class="panel panel--info">
+        <h2>How it works</h2>
+        <p>RegionGuard uses local jurisdiction profiles, cloud provider guidance, and rules of engagement presets to create a deterministic briefing payload. The output is designed for security teams preparing a consistent engagement package.</p>
+        <ul>
+          <li>Simple, local-first YAML library</li>
+          <li>Minimal professional UI</li>
+          <li>No cloud dependencies or authentication</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
