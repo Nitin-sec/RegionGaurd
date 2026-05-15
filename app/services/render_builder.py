@@ -13,21 +13,40 @@ class RenderBuilder:
     def build_render_data(self, engagement: EngagementRequest) -> dict:
         jurisdiction_data = self.yaml_loader.get_jurisdiction(engagement.jurisdiction)
         cloud_data = self.yaml_loader.get_cloud_provider(engagement.cloud_provider)
-        roe_data = self.yaml_loader.get_roe_preset(engagement.engagement_type)
+        preset_data = self.yaml_loader.get_engagement_preset(engagement.engagement_preset)
 
         if not jurisdiction_data:
             raise ValueError(f"Jurisdiction data not found for '{engagement.jurisdiction}'.")
         if not cloud_data:
             raise ValueError(f"Cloud provider data not found for '{engagement.cloud_provider}'.")
-        if not roe_data:
-            raise ValueError(f"Rules of engagement preset not found for '{engagement.engagement_type}'.")
+        if not preset_data:
+            raise ValueError(f"Engagement preset not found for '{engagement.engagement_preset}'.")
 
         jurisdiction_summary = self.jurisdiction_service.summarize(jurisdiction_data)
+        scope_items = self._normalize_list(engagement.scope_assets)
+        objective_items = self._normalize_list(engagement.objectives)
+        exclusion_items = self._normalize_list(engagement.exclusions)
 
         return {
             "client_name": engagement.client_name,
             "target_type": engagement.target_type,
-            "scope_text": engagement.scope_text,
+            "engagement_preset_key": engagement.engagement_preset,
+            "engagement_preset_name": preset_data.get("display_name", engagement.engagement_preset),
+            "engagement_preset_description": preset_data.get("description", ""),
+            "preset_scope_examples": preset_data.get("suggested_scope_examples", []),
+            "preset_roe_notes": preset_data.get("recommended_roe_notes", []),
+            "preset_testing_window": preset_data.get("recommended_testing_window", ""),
+            "preset_operational_considerations": preset_data.get("operational_considerations", []),
+            "objectives_text": engagement.objectives,
+            "objectives_list": objective_items,
+            "scope_text": engagement.scope_assets,
+            "scope_assets_list": scope_items,
+            "exclusions_text": engagement.exclusions,
+            "exclusions_list": exclusion_items,
+            "testing_window": engagement.testing_window,
+            "production_environment": engagement.production_environment,
+            "authentication_provided": engagement.authentication_provided,
+            "operational_notes": engagement.operational_notes,
             "jurisdiction_key": engagement.jurisdiction,
             "jurisdiction_name": jurisdiction_summary["name"],
             "jurisdiction_overview": jurisdiction_summary["overview"],
@@ -41,13 +60,7 @@ class RenderBuilder:
             ),
             "cloud_provider_controls": cloud_data.get("security_controls", []),
             "cloud_provider_region_coverage": cloud_data.get("region_coverage", []),
-            "roe_preset_key": engagement.engagement_type,
-            "roe_preset_name": roe_data.get("name", engagement.engagement_type),
-            "roe_description": roe_data.get(
-                "description",
-                "No rules of engagement description is available.",
-            ),
-            "roe_guidance": roe_data.get("rules_of_engagement", []),
-            "roe_scope_limitations": roe_data.get("scope_limitations", ""),
-            "roe_report_timing": roe_data.get("report_timing", ""),
         }
+
+    def _normalize_list(self, text: str) -> list[str]:
+        return [line.strip() for line in text.splitlines() if line.strip()]

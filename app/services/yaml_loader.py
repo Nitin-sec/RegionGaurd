@@ -13,6 +13,7 @@ class YAMLLoader:
             "jurisdictions": None,
             "cloud_providers": None,
             "roe_presets": None,
+            "engagement_presets": None,
         }
 
     def _load_folder(self, folder_name: str) -> dict:
@@ -63,6 +64,16 @@ class YAMLLoader:
             {"key": key, "label": data.get("name", key)}
             for key, data in sorted(collection.items(), key=lambda item: item[1].get("name", item[0]))
         ]
+
+    def list_engagement_presets(self) -> list[dict[str, str]]:
+        collection = self._ensure_section("engagement_presets")
+        return [
+            {"key": key, "label": data.get("display_name", key)}
+            for key, data in sorted(collection.items(), key=lambda item: item[1].get("display_name", item[0]))
+        ]
+
+    def get_engagement_preset(self, key: str) -> dict:
+        return self._ensure_section("engagement_presets").get(key, {})
 
     def get_jurisdiction(self, key: str) -> dict:
         return self._ensure_section("jurisdictions").get(key, {})

@@ -1,0 +1,21 @@
+display_name: Internal network
+description: Operational testing of internal infrastructure and network-facing assets behind corporate firewalls.
+default_objectives:
+  - Map approved internal network segments and asset owners.
+  - Evaluate internal access controls and lateral movement mitigations.
+  - Review segmentation and network filtering effectiveness.
+suggested_scope_examples:
+  - Corporate subnet ranges, data center segments, and internal VLANs.
+  - Internal Windows and Linux hosts, management interfaces, and network appliances.
+  - Internal cloud-native management planes and private endpoints.
+default_exclusions:
+  - External internet-facing services and production-facing applications.
+  - Corporate endpoints beyond the defined internal network blocks.
+  - Social engineering or physical access unless expressly approved.
+recommended_roe_notes:
+  - Respect internal change windows and maintenance schedules.
+  - Avoid disruptive scanning on critical infrastructure.
+recommended_testing_window: Off-peak internal hours with IT coordination.
+operational_considerations:
+  - Validate access permissions before any privileged scans.
+  - Use approved jump hosts or VPN connections for internal access.

@@ -20,6 +20,7 @@ def home_page():
         {
             "jurisdictions": yaml_loader.list_jurisdictions(),
             "cloud_providers": yaml_loader.list_cloud_providers(),
-            "roe_presets": yaml_loader.list_roe_presets(),
+            "engagement_presets": yaml_loader.list_engagement_presets(),
+            "engagement_preset_data": yaml_loader._ensure_section("engagement_presets"),
         },
     )

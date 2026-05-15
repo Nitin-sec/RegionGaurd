@@ -25,19 +25,31 @@ export_service = ExportService(settings.package_dir)
 def generate_summary(
     client_name: str = Form(...),
     jurisdiction: str = Form(...),
-    engagement_type: str = Form(...),
+    engagement_preset: str = Form(...),
     target_type: str = Form(...),
-    scope_text: str = Form(...),
+    objectives: str = Form(...),
+    scope_assets: str = Form(...),
+    exclusions: str = Form(...),
+    testing_window: str = Form(...),
+    production_environment: str = Form(...),
+    authentication_provided: str = Form(...),
+    operational_notes: str = Form(""),
     cloud_provider: str = Form(...),
 ):
-    """Build and render a deterministic engagement briefing page from form inputs."""
+    """Build and render a deterministic engagement briefing page from structured form inputs."""
     try:
         request_data = EngagementRequest(
             client_name=client_name,
             jurisdiction=jurisdiction,
-            engagement_type=engagement_type,
+            engagement_preset=engagement_preset,
             target_type=target_type,
-            scope_text=scope_text,
+            objectives=objectives,
+            scope_assets=scope_assets,
+            exclusions=exclusions,
+            testing_window=testing_window,
+            production_environment=production_environment.lower() == "yes",
+            authentication_provided=authentication_provided.lower() == "yes",
+            operational_notes=operational_notes,
             cloud_provider=cloud_provider,
         )
         render_data = render_builder.build_render_data(request_data)

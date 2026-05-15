@@ -1,0 +1,21 @@
+display_name: Startup infrastructure
+description: Practical security engagement for emerging infrastructure and lean operational environments.
+default_objectives:
+  - Confirm basic infrastructure controls are applied consistently.
+  - Identify overly broad access and default configurations.
+  - Review core service availability and operational security posture.
+suggested_scope_examples:
+  - Application hosting instances, databases, and platform services.
+  - Container hosts, orchestration control planes, and continuous delivery tools.
+  - Identity providers and administrative access points.
+default_exclusions:
+  - Pilot systems or experimental services not approved for the engagement.
+  - Customer endpoints outside of the current infrastructure boundary.
+  - Physical security assessments unless separately agreed.
+recommended_roe_notes:
+  - Align testing with the client’s operational readiness and support coverage.
+  - Document assumptions for emerging or rapidly changing infrastructure.
+recommended_testing_window: Standard business days or agreed support windows.
+operational_considerations:
+  - Confirm the infrastructure owners and support contacts before testing.
+  - Avoid applying broad or destructive techniques on shared resources.

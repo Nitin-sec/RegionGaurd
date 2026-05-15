@@ -31,29 +31,33 @@ class DocxGenerator:
                 ("Client", render_data["client_name"]),
                 ("Document date", date.today().strftime("%B %d, %Y")),
                 ("Jurisdiction", render_data["jurisdiction_name"]),
-                ("Engagement type", render_data["roe_preset_name"]),
+                ("Engagement preset", render_data["engagement_preset_name"]),
                 ("Cloud provider", render_data["cloud_provider_name"]),
                 ("Target type", render_data["target_type"]),
+                ("Testing window", render_data["testing_window"]),
+                ("Production environment", "Yes" if render_data["production_environment"] else "No"),
+                ("Authentication provided", "Yes" if render_data["authentication_provided"] else "No"),
             ],
         )
 
         self._add_paragraph(
             document,
-            "This document confirms the engagement is authorized to proceed with the defined scope and objectives.",
+            "This authorization letter confirms the security engagement may proceed under the documented operational boundaries.",
         )
-        self._add_paragraph(
-            document,
-            "The assessment will follow agreed operational controls and is limited to the assets and environment described in the scope definition.",
-        )
+        self._add_section(document, "Engagement objectives", render_data.get("objectives_list", [render_data.get("objectives_text", "")]))
+        self._add_section(document, "Supported scope", render_data.get("scope_assets_list", [render_data.get("scope_text", "")]))
+
+        if render_data.get("operational_notes"):
+            self._add_section(document, "Operational notes", [render_data["operational_notes"]])
+
         self._add_section(document, "Authorization statement", [
-            "The client has authorized the security assessment and accepts that testing will be carried out within the stated boundaries.",
-            "Testing execution will remain consistent with stated scope, jurisdiction requirements, and cloud provider context.",
+            "The client has authorized the assessment activities described in the scope definition.",
+            "Testing will remain aligned with jurisdiction requirements, cloud provider expectations, and client operational constraints.",
         ])
         self._add_section(document, "Approved testing statement", [
-            "Approved techniques include discovery, configuration review, and controlled testing of authorized targets.",
-            "No destructive actions will be performed without explicit, separate authorization.",
+            "Permitted engagement activities are limited to the authorized assets and objectives.",
+            "No actions outside the approved engagement should be taken without separate authorization.",
         ])
-        self._add_section(document, "Scope summary", [render_data["scope_text"]])
         self._add_paragraph(document, "Signatory approval", bold=True)
         self._add_paragraph(document, "Client representative: _________________________________")
         self._add_paragraph(document, "Assessment lead: _________________________________")
@@ -61,7 +65,7 @@ class DocxGenerator:
         self._add_paragraph(document, "Disclaimer", bold=True)
         self._add_paragraph(
             document,
-            "This document is intended for engagement planning and operational coordination. It is not legal advice.",
+            "This document supports operational coordination and does not replace formal contractual terms.",
         )
         document.save(output_path)
         return output_path
@@ -69,41 +73,41 @@ class DocxGenerator:
     def generate_rules_of_engagement(self, render_data: dict, output_path: Path) -> Path:
         document = self._create_document()
         self._add_heading(document, "Rules of Engagement")
-        self._add_paragraph(document, "This document defines the conditions and expectations for the engagement.")
+        self._add_paragraph(document, "This document defines the operational conditions and expectations for the engagement.")
 
         self._add_section(document, "Permitted activities", [
-            "Testing authorized targets and assets within the documented scope.",
-            "Reviewing configuration, access control, and security monitoring posture.",
-            "Providing concise operational findings and improvement recommendations.",
+            "Testing authorized targets and assets within the documented engagement scope.",
+            "Reviewing configuration, access control, and security posture.",
+            "Reporting findings in clear and deterministic language.",
         ])
-        if render_data.get("roe_guidance"):
-            self._add_section(document, "Engagement guidance", render_data["roe_guidance"])
+        if render_data.get("preset_roe_notes"):
+            self._add_section(document, "Engagement guidance", render_data["preset_roe_notes"])
 
         self._add_section(document, "Prohibited activities", [
             "Unauthorized testing outside the defined scope.",
             "Denial-of-service techniques unless explicitly approved.",
-            "Social engineering and physical security testing unless separately agreed.",
+            "Social engineering or physical security testing unless separately agreed.",
         ])
 
         self._add_section(document, "Communication expectations", [
-            "The assessment team will provide regular status updates for critical findings.",
-            "Communication will be routed through the designated client contact and assessment lead.",
-            "All findings will be reported clearly and without speculative language.",
+            "The assessment team will provide timely status updates for critical findings.",
+            "Communication will be coordinated through the designated client contact.",
+            "All findings will be documented with operational context and impact statements.",
         ])
 
         self._add_section(document, "Escalation procedures", [
-            "Significant issues will be escalated to the client contact immediately.",
-            "Operational risks that impact the engagement will be documented and reviewed without delay.",
-            "Escalation will maintain transparency and preserve evidence integrity.",
+            "Significant issues will be escalated immediately to the client contact.",
+            "Operational risks will be documented and reviewed without delay.",
+            "Escalation will preserve evidence integrity and maintain transparency.",
         ])
 
-        report_timing = render_data.get("roe_report_timing")
-        if report_timing:
-            self._add_section(document, "Reporting timeline", [report_timing])
+        if render_data.get("testing_window"):
+            self._add_section(document, "Testing window", [render_data["testing_window"]])
+        if render_data.get("preset_testing_window"):
+            self._add_section(document, "Recommended timing", [render_data["preset_testing_window"]])
 
-        scope_limitations = render_data.get("roe_scope_limitations")
-        if scope_limitations:
-            self._add_section(document, "Testing limitations", [scope_limitations])
+        if render_data.get("preset_operational_considerations"):
+            self._add_section(document, "Operational considerations", render_data["preset_operational_considerations"])
 
         document.save(output_path)
         return output_path
@@ -111,31 +115,37 @@ class DocxGenerator:
     def generate_scope_definition(self, render_data: dict, output_path: Path) -> Path:
         document = self._create_document()
         self._add_heading(document, "Scope Definition")
-        self._add_paragraph(document, "This document describes what is in scope, what is excluded, and the supporting cloud context.")
+        self._add_paragraph(document, "This document describes the in-scope assets, exclusions, environment controls, and testing context.")
 
         self._add_key_value_table(
             document,
             [
                 ("Client", render_data["client_name"]),
                 ("Target type", render_data["target_type"]),
+                ("Engagement preset", render_data["engagement_preset_name"]),
                 ("Jurisdiction", render_data["jurisdiction_name"]),
                 ("Cloud provider", render_data["cloud_provider_name"]),
             ],
         )
 
-        self._add_section(document, "In-scope assets", [
-            render_data["scope_text"],
-            "Assets and systems described in the scope are included unless otherwise noted.",
-        ])
+        if render_data.get("objectives_list"):
+            self._add_section(document, "Engagement objectives", render_data["objectives_list"])
 
-        exclusions = [
-            "Assets not explicitly included in the scope statement.",
-            "Third-party systems outside the approved cloud provider boundary.",
+        if render_data.get("scope_assets_list"):
+            self._add_section(document, "In-scope assets", render_data["scope_assets_list"])
+
+        if render_data.get("exclusions_list"):
+            self._add_section(document, "Exclusions", render_data["exclusions_list"])
+
+        scope_metadata = [
+            f"Testing window: {render_data['testing_window']}",
+            f"Production environment: {'Yes' if render_data['production_environment'] else 'No'}",
+            f"Authentication provided: {'Yes' if render_data['authentication_provided'] else 'No'}",
         ]
-        if render_data.get("roe_scope_limitations"):
-            exclusions.append(render_data["roe_scope_limitations"])
+        self._add_section(document, "Engagement context", scope_metadata)
 
-        self._add_section(document, "Exclusions", exclusions)
+        if render_data.get("operational_notes"):
+            self._add_section(document, "Operational notes", [render_data["operational_notes"]])
 
         self._add_section(document, "Cloud provider context", [
             f"Cloud provider: {render_data['cloud_provider_name']}",
@@ -144,9 +154,9 @@ class DocxGenerator:
 
         provider_controls = render_data.get("cloud_provider_controls", [])
         if provider_controls:
-            self._add_section(document, "Operational considerations", provider_controls)
+            self._add_section(document, "Cloud operational considerations", provider_controls)
 
-        self._add_paragraph(document, "The scope definition is designed to support operational planning, status tracking, and clear client handoff.")
+        self._add_paragraph(document, "The scope definition supports operational planning, client agreement, and testing coordination.")
         document.save(output_path)
         return output_path
 

@@ -1,0 +1,21 @@
+display_name: API security
+description: Structured assessment of API endpoints, authentication flows, and data transport controls.
+default_objectives:
+  - Validate API authentication and authorization mechanisms.
+  - Confirm input validation and output handling are consistent.
+  - Review API rate limits and error-handling behavior.
+suggested_scope_examples:
+  - REST/JSON endpoints and GraphQL interfaces.
+  - API gateways, backend services, and service-to-service connections.
+  - Authentication and token exchange endpoints.
+default_exclusions:
+  - Unrelated backend services not in the selected API workflow.
+  - External partner APIs retired or outside the engagement boundary.
+  - Automated denial-of-service techniques without explicit approval.
+recommended_roe_notes:
+  - Handle credentialed access carefully and minimize retries to avoid throttling.
+  - Document any assumptions made about API versioning and feature flags.
+recommended_testing_window: Scheduled access windows aligned with API support teams.
+operational_considerations:
+  - Confirm the expected API version and endpoint documentation.
+  - Avoid write operations unless the scope explicitly permits them.

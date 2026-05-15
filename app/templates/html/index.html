@@ -30,12 +30,47 @@
             {% endfor %}
           </select>
 
-          <label for="engagement_type">Engagement type</label>
-          <select id="engagement_type" name="engagement_type" required>
-            {% for preset in roe_presets %}
+          <label for="engagement_preset">Engagement preset</label>
+          <select id="engagement_preset" name="engagement_preset" required>
+            {% for preset in engagement_presets %}
               <option value="{{ preset.key }}">{{ preset.label }}</option>
             {% endfor %}
           </select>
+          <p class="field-help">Choose a professional preset to align objectives, scope, and operational guidance.</p>
+
+          <label for="objectives">Objectives</label>
+          <textarea id="objectives" name="objectives" rows="4" required maxlength="1200" placeholder="Example objectives: Identify authentication weaknesses, evaluate access controls, and verify boundary handling."></textarea>
+          <p class="field-help">List the assessment goals clearly, using outcome-focused language.</p>
+
+          <label for="scope_assets">In-scope assets</label>
+          <textarea id="scope_assets" name="scope_assets" rows="5" required maxlength="1200" placeholder="Example in-scope assets: app.example.com, user authentication API, selected cloud resource groups."></textarea>
+          <p class="field-help">Describe the assets and boundaries in precise terms, one item per line where possible.</p>
+
+          <label for="exclusions">Exclusions</label>
+          <textarea id="exclusions" name="exclusions" rows="4" required maxlength="1200" placeholder="Example exclusions: internal employee workstations, external partner networks, denial-of-service testing."></textarea>
+          <p class="field-help">Define what is explicitly out of scope to support safer execution.</p>
+
+          <label for="testing_window">Testing window</label>
+          <input id="testing_window" name="testing_window" type="text" required maxlength="120" placeholder="Example: Weekdays 09:00–17:00 local time" />
+          <p class="field-help">Specify the agreed window when active testing should occur.</p>
+
+          <label for="production_environment">Production environment?</label>
+          <select id="production_environment" name="production_environment" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          <p class="field-help">Indicate whether the engagement includes live production systems.</p>
+
+          <label for="authentication_provided">Authentication provided?</label>
+          <select id="authentication_provided" name="authentication_provided" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+          <p class="field-help">Note whether credentials or other access support will be supplied.</p>
+
+          <label for="operational_notes">Additional operational notes</label>
+          <textarea id="operational_notes" name="operational_notes" rows="4" maxlength="1200" placeholder="Optional: Provide coordination details, support contacts, or risk-reduction guidance."></textarea>
+          <p class="field-help">Use this field for client-specific operations, approvals, or coordination notes.</p>
 
           <label for="target_type">Target type</label>
           <input id="target_type" name="target_type" type="text" required maxlength="80" placeholder="Web application / cloud workload" />
@@ -47,10 +82,33 @@
             {% endfor %}
           </select>
 
-          <label for="scope_text">Scope and objectives</label>
-          <textarea id="scope_text" name="scope_text" rows="8" required maxlength="1200" placeholder="Describe the assets and boundaries for the engagement."></textarea>
-
           <button type="submit">Generate engagement brief</button>
+
+          <script>
+            const presetLibrary = {{ engagement_preset_data | tojson }};
+            const presetSelect = document.getElementById('engagement_preset');
+            const objectivesField = document.getElementById('objectives');
+            const exclusionsField = document.getElementById('exclusions');
+            const operationalNotesField = document.getElementById('operational_notes');
+            const testingWindowField = document.getElementById('testing_window');
+
+            function populateField(value, target) {
+              if (!target.value.trim() && value) {
+                target.value = value;
+              }
+            }
+
+            function applyPreset(key) {
+              const preset = presetLibrary[key] || {};
+              populateField((preset.default_objectives || []).join('\n'), objectivesField);
+              populateField((preset.default_exclusions || []).join('\n'), exclusionsField);
+              populateField(preset.operational_considerations ? preset.operational_considerations.join('\n') : '', operationalNotesField);
+              populateField(preset.recommended_testing_window || '', testingWindowField);
+            }
+
+            presetSelect.addEventListener('change', (event) => applyPreset(event.target.value));
+            document.addEventListener('DOMContentLoaded', () => applyPreset(presetSelect.value));
+          </script>
         </form>
       </section>
 

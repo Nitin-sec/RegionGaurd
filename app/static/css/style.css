@@ -133,6 +133,18 @@ ul {
   padding-left: 1.3rem;
 }
 
+.field-help {
+  margin: 6px 0 0 0;
+  color: #5f6c7d;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.panel--download ul {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
 .note {
   margin-top: 14px;
   color: #4f5b66;

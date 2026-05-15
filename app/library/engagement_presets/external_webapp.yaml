@@ -1,0 +1,21 @@
+display_name: External web application
+description: Focused engagement for customer-facing web applications and external asset reconnaissance.
+default_objectives:
+  - Assess authentication and session management controls.
+  - Verify web application authorization boundaries and input validation.
+  - Confirm exposed endpoints are documented and tested.
+suggested_scope_examples:
+  - Public web assets: example.com, app.example.com
+  - Web server infrastructure, load balancers, and CDN interactions.
+  - External API endpoints exposed to the internet.
+default_exclusions:
+  - Internal corporate systems not reachable from the public internet.
+  - Third-party partner networks without explicit authorization.
+  - Denial-of-service testing unless separately authorized.
+recommended_roe_notes:
+  - Maintain a low-impact approach for customer-facing services.
+  - Coordinate around release windows or maintenance periods.
+recommended_testing_window: Business hours local to the client, avoiding high traffic periods.
+operational_considerations:
+  - Ensure backup and rollback paths are available for shared web infrastructure.
+  - Record evidence in a way that differentiates diagnostic tests from production incidents.

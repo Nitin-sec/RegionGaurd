@@ -1,0 +1,21 @@
+display_name: Cloud review
+description: Assessment of cloud configurations, provider controls, and environment security posture.
+default_objectives:
+  - Review cloud provider security settings and resource permissions.
+  - Assess identity and access management policies.
+  - Confirm network and storage security controls are aligned with baseline standards.
+suggested_scope_examples:
+  - Cloud accounts, projects, subscriptions, and resource groups.
+  - IAM roles, policies, service principals, and managed identities.
+  - Cloud-native networking, storage, and logging configurations.
+default_exclusions:
+  - Customer-managed application code outside cloud configuration scope.
+  - Separate cloud tenants not listed in the approved environment.
+  - Live production traffic simulation beyond read-only configuration analysis.
+recommended_roe_notes:
+  - Use account-level access controls and scoped credentials where possible.
+  - Maintain clear documentation of cloud asset ownership.
+recommended_testing_window: Business days during normal cloud operations, with change control awareness.
+operational_considerations:
+  - Avoid changes to critical cloud permissions during the review.
+  - Capture cloud provider region and tenant details for traceability.

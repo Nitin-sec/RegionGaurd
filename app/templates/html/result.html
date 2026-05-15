@@ -18,15 +18,74 @@
 
     <main class="content-grid">
       <section class="panel">
-        <h2>Client & scope</h2>
+        <h2>Engagement summary</h2>
         <dl>
           <dt>Client</dt>
           <dd>{{ render.client_name }}</dd>
+          <dt>Engagement preset</dt>
+          <dd>{{ render.engagement_preset_name }}</dd>
           <dt>Target</dt>
           <dd>{{ render.target_type }}</dd>
-          <dt>Scope</dt>
-          <dd>{{ render.scope_text }}</dd>
+          <dt>Testing window</dt>
+          <dd>{{ render.testing_window }}</dd>
+          <dt>Production environment</dt>
+          <dd>{{ 'Yes' if render.production_environment else 'No' }}</dd>
+          <dt>Authentication provided</dt>
+          <dd>{{ 'Yes' if render.authentication_provided else 'No' }}</dd>
         </dl>
+      </section>
+
+      <section class="panel">
+        <h2>Objectives</h2>
+        <ul>
+          {% for objective in render.objectives_list %}
+            <li>{{ objective }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>In-scope assets</h2>
+        <ul>
+          {% for asset in render.scope_assets_list %}
+            <li>{{ asset }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="panel panel--info">
+        <h2>Exclusions</h2>
+        <ul>
+          {% for exclusion in render.exclusions_list %}
+            <li>{{ exclusion }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Operational notes</h2>
+        <p>{{ render.operational_notes or 'No additional notes were provided.' }}</p>
+      </section>
+
+      <section class="panel">
+        <h2>Preset guidance</h2>
+        <p>{{ render.engagement_preset_description }}</p>
+        {% if render.preset_scope_examples %}
+          <h3>Suggested scope examples</h3>
+          <ul>
+            {% for example in render.preset_scope_examples %}
+              <li>{{ example }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if render.preset_operational_considerations %}
+          <h3>Operational considerations</h3>
+          <ul>
+            {% for item in render.preset_operational_considerations %}
+              <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </section>
 
       <section class="panel">
@@ -51,23 +110,6 @@
           {% endfor %}
         </ul>
         <p class="note">Region coverage: {{ render.cloud_provider_region_coverage | join(", ") }}</p>
-      </section>
-
-      <section class="panel panel--info">
-        <h2>Rules of engagement</h2>
-        <p>{{ render.roe_description }}</p>
-        <h3>Guidance</h3>
-        <ul>
-          {% for rule in render.roe_guidance %}
-            <li>{{ rule }}</li>
-          {% endfor %}
-        </ul>
-        {% if render.roe_scope_limitations %}
-          <p><strong>Scope limitations:</strong> {{ render.roe_scope_limitations }}</p>
-        {% endif %}
-        {% if render.roe_report_timing %}
-          <p><strong>Report timing:</strong> {{ render.roe_report_timing }}</p>
-        {% endif %}
       </section>
 
       {% if download_files %}
