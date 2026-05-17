@@ -17,26 +17,47 @@
     </header>
 
     <main class="content-grid">
-      <section class="panel">
-        <h2>Engagement summary</h2>
-        <dl>
-          <dt>Client</dt>
-          <dd>{{ render.client_name }}</dd>
-          <dt>Engagement preset</dt>
-          <dd>{{ render.engagement_preset_name }}</dd>
-          <dt>Target</dt>
-          <dd>{{ render.target_type }}</dd>
-          <dt>Testing window</dt>
-          <dd>{{ render.testing_window }}</dd>
-          <dt>Production environment</dt>
-          <dd>{{ 'Yes' if render.production_environment else 'No' }}</dd>
-          <dt>Authentication provided</dt>
-          <dd>{{ 'Yes' if render.authentication_provided else 'No' }}</dd>
+      <section class="panel panel--highlight">
+        <h2>Engagement approved</h2>
+        <p>Review your scope below. If everything looks right, download your documents.</p>
+        <dl class="summary-grid">
+          <div class="summary-item">
+            <dt>Client</dt>
+            <dd>{{ render.client_name }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Engagement type</dt>
+            <dd>{{ render.engagement_preset_name }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Target</dt>
+            <dd>{{ render.target_type }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Location</dt>
+            <dd>{{ render.jurisdiction_name }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Testing window</dt>
+            <dd>{{ render.testing_window }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Production?</dt>
+            <dd>{{ 'Yes' if render.production_environment else 'No' }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Auth provided?</dt>
+            <dd>{{ 'Yes' if render.authentication_provided else 'No' }}</dd>
+          </div>
+          <div class="summary-item">
+            <dt>Cloud provider</dt>
+            <dd>{{ render.cloud_provider_name }}</dd>
+          </div>
         </dl>
       </section>
 
       <section class="panel">
-        <h2>Objectives</h2>
+        <h2>Goals</h2>
         <ul>
           {% for objective in render.objectives_list %}
             <li>{{ objective }}</li>
@@ -45,7 +66,7 @@
       </section>
 
       <section class="panel">
-        <h2>In-scope assets</h2>
+        <h2>What will be tested</h2>
         <ul>
           {% for asset in render.scope_assets_list %}
             <li>{{ asset }}</li>
@@ -53,8 +74,9 @@
         </ul>
       </section>
 
-      <section class="panel panel--info">
-        <h2>Exclusions</h2>
+      <section class="panel panel--warning">
+        <h2>Out of scope</h2>
+        <p class="warning-intro">Make sure the client agrees these are excluded:</p>
         <ul>
           {% for exclusion in render.exclusions_list %}
             <li>{{ exclusion }}</li>
@@ -62,24 +84,18 @@
         </ul>
       </section>
 
+      {% if render.operational_notes %}
       <section class="panel">
-        <h2>Operational notes</h2>
-        <p>{{ render.operational_notes or 'No additional notes were provided.' }}</p>
+        <h2>Special instructions</h2>
+        <p>{{ render.operational_notes }}</p>
       </section>
+      {% endif %}
 
       <section class="panel">
-        <h2>Preset guidance</h2>
+        <h2>{{ render.engagement_preset_name }} guidance</h2>
         <p>{{ render.engagement_preset_description }}</p>
-        {% if render.preset_scope_examples %}
-          <h3>Suggested scope examples</h3>
-          <ul>
-            {% for example in render.preset_scope_examples %}
-              <li>{{ example }}</li>
-            {% endfor %}
-          </ul>
-        {% endif %}
         {% if render.preset_operational_considerations %}
-          <h3>Operational considerations</h3>
+          <h3>Key considerations</h3>
           <ul>
             {% for item in render.preset_operational_considerations %}
               <li>{{ item }}</li>
@@ -89,38 +105,42 @@
       </section>
 
       <section class="panel">
-        <h2>Jurisdiction guidance</h2>
+        <h2>{{ render.jurisdiction_name }} context</h2>
         <p>{{ render.jurisdiction_overview }}</p>
-        <h3>Regulatory framework</h3>
-        <ul>
-          {% for framework in render.jurisdiction_frameworks %}
-            <li>{{ framework }}</li>
-          {% endfor %}
-        </ul>
-        <p class="note">Data residency: {{ render.jurisdiction_data_residency }}</p>
+        {% if render.jurisdiction_frameworks %}
+          <h3>Relevant standards</h3>
+          <ul>
+            {% for framework in render.jurisdiction_frameworks %}
+              <li>{{ framework }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <p class="note"><strong>Data residency:</strong> {{ render.jurisdiction_data_residency }}</p>
       </section>
 
       <section class="panel">
-        <h2>Cloud provider context</h2>
+        <h2>{{ render.cloud_provider_name }} context</h2>
         <p>{{ render.cloud_provider_summary }}</p>
-        <h3>Security controls</h3>
-        <ul>
-          {% for control in render.cloud_provider_controls %}
-            <li>{{ control }}</li>
-          {% endfor %}
-        </ul>
-        <p class="note">Region coverage: {{ render.cloud_provider_region_coverage | join(", ") }}</p>
+        {% if render.cloud_provider_controls %}
+          <h3>Built-in controls</h3>
+          <ul>
+            {% for control in render.cloud_provider_controls %}
+              <li>{{ control }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </section>
 
       {% if download_files %}
       <section class="panel panel--download">
-        <h2>Download generated documents</h2>
-        <ul>
+        <h2>Download your documents</h2>
+        <p>Three files, ready to customize:</p>
+        <ul class="download-list">
           {% for file in download_files %}
             <li><a class="link-button" href="/download/docx/{{ file.name }}">{{ file.label }}</a></li>
           {% endfor %}
         </ul>
-        <p><a class="link-button" href="/download/package/{{ package_file }}">Download package (ZIP)</a></p>
+        <p><a class="link-button" href="/download/package/{{ package_file }}">Download all as ZIP</a></p>
       </section>
       {% endif %}
     </main>

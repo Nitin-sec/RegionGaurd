@@ -11,78 +11,144 @@
     <header class="hero">
       <div>
         <p class="eyebrow">RegionGuard</p>
-        <h1>Cybersecurity engagement preparation</h1>
-        <p>Use local guidance and cloud context to generate a deterministic briefing for your next engagement.</p>
+        <h1>Prepare your next engagement</h1>
+        <p>Build a structured, client-approved scope for your security assessment. Works offline, no cloud dependencies.</p>
       </div>
     </header>
 
     <main class="content-grid">
+      <section class="panel panel--onboarding">
+        <h2>Your engagement in 4 steps</h2>
+        <p class="onboarding-intro">This helps you build a professional security assessment plan with your client — without needing to be an expert in compliance terminology.</p>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>What are you testing?</h3>
+            <p>Website, API, cloud infrastructure — tell us the type.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>What systems?</h3>
+            <p>Specific URLs, IPs, or cloud accounts you're assessing.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Set boundaries</h3>
+            <p>What's off-limits, when testing happens, who has access.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <h3>Documents ready</h3>
+            <p>Generate editable word documents your client can review.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="panel">
-        <h2>Engagement details</h2>
+        <h2>Build your engagement</h2>
+        <p class="intro-help">Fill in what you know. You can edit everything later. Leave optional fields blank if needed.</p>
         <form method="post" action="/generate">
-          <label for="client_name">Client name</label>
-          <input id="client_name" name="client_name" type="text" required maxlength="120" placeholder="Acme Security" />
+          <fieldset class="form-section">
+            <legend class="section-title">The Basics</legend>
 
-          <label for="jurisdiction">Jurisdiction</label>
-          <select id="jurisdiction" name="jurisdiction" required>
-            {% for jurisdiction in jurisdictions %}
-              <option value="{{ jurisdiction.key }}">{{ jurisdiction.label }}</option>
-            {% endfor %}
-          </select>
+            <label for="client_name">Client name</label>
+            <input id="client_name" name="client_name" type="text" required maxlength="120" placeholder="e.g., Acme Corp" />
+            <p class="field-help">Who are you doing this assessment for?</p>
 
-          <label for="engagement_preset">Engagement preset</label>
-          <select id="engagement_preset" name="engagement_preset" required>
-            {% for preset in engagement_presets %}
-              <option value="{{ preset.key }}">{{ preset.label }}</option>
-            {% endfor %}
-          </select>
-          <p class="field-help">Choose a professional preset to align objectives, scope, and operational guidance.</p>
+            <label for="engagement_preset">What type of system are you assessing?</label>
+            <select id="engagement_preset" name="engagement_preset" required>
+              {% for preset in engagement_presets %}
+                <option value="{{ preset.key }}">{{ preset.label }}</option>
+              {% endfor %}
+            </select>
+            <p class="field-help">Choose the one that fits best. (We'll suggest relevant details for this type.)</p>
 
-          <label for="objectives">Objectives</label>
-          <textarea id="objectives" name="objectives" rows="4" required maxlength="1200" placeholder="Example objectives: Identify authentication weaknesses, evaluate access controls, and verify boundary handling."></textarea>
-          <p class="field-help">List the assessment goals clearly, using outcome-focused language.</p>
+            <label for="target_type">Describe the target in one line</label>
+            <input id="target_type" name="target_type" type="text" required maxlength="80" placeholder="e.g., Customer web app on AWS" />
+            <p class="field-help">Keep it short. This shows up in your engagement summary.</p>
+          </fieldset>
 
-          <label for="scope_assets">In-scope assets</label>
-          <textarea id="scope_assets" name="scope_assets" rows="5" required maxlength="1200" placeholder="Example in-scope assets: app.example.com, user authentication API, selected cloud resource groups."></textarea>
-          <p class="field-help">Describe the assets and boundaries in precise terms, one item per line where possible.</p>
+          <fieldset class="form-section">
+            <legend class="section-title">What Gets Tested</legend>
 
-          <label for="exclusions">Exclusions</label>
-          <textarea id="exclusions" name="exclusions" rows="4" required maxlength="1200" placeholder="Example exclusions: internal employee workstations, external partner networks, denial-of-service testing."></textarea>
-          <p class="field-help">Define what is explicitly out of scope to support safer execution.</p>
+            <label for="scope_assets">List the systems or assets in scope</label>
+            <textarea id="scope_assets" name="scope_assets" rows="3" required maxlength="1200" placeholder="One per line (e.g., https://app.example.com)"></textarea>
+            <p class="field-help">Be specific. URLs, IP ranges, cloud accounts — whatever you'll be testing.</p>
+            <button type="button" class="example-btn" data-field="scope_assets" data-examples="https://app.example.com&#10;/api/users&#10;/api/auth&#10;API gateway">Show example</button>
 
-          <label for="testing_window">Testing window</label>
-          <input id="testing_window" name="testing_window" type="text" required maxlength="120" placeholder="Example: Weekdays 09:00–17:00 local time" />
-          <p class="field-help">Specify the agreed window when active testing should occur.</p>
+            <label for="objectives">What are the main goals of this assessment?</label>
+            <textarea id="objectives" name="objectives" rows="2" required maxlength="1200" placeholder="e.g., Find login weaknesses"></textarea>
+            <p class="field-help">What should your client care about? What security issues are you looking for?</p>
+            <button type="button" class="example-btn" data-field="objectives" data-examples="Find authentication weaknesses&#10;Test access controls&#10;Verify input validation&#10;Check for data exposure">Show example</button>
+          </fieldset>
 
-          <label for="production_environment">Production environment?</label>
-          <select id="production_environment" name="production_environment" required>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-          <p class="field-help">Indicate whether the engagement includes live production systems.</p>
+          <fieldset class="form-section">
+            <legend class="section-title">Set Boundaries</legend>
 
-          <label for="authentication_provided">Authentication provided?</label>
-          <select id="authentication_provided" name="authentication_provided" required>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-          <p class="field-help">Note whether credentials or other access support will be supplied.</p>
+            <label for="exclusions">What should NOT be tested?</label>
+            <textarea id="exclusions" name="exclusions" rows="2" required maxlength="1200" placeholder="e.g., Payment processing (handled by vendor)"></textarea>
+            <p class="field-help">Be clear about what's off-limits. This protects both you and the client.</p>
+            <button type="button" class="example-btn" data-field="exclusions" data-examples="Payment processing&#10;Third-party integrations&#10;Production database&#10;Denial-of-service testing">Show example</button>
 
-          <label for="operational_notes">Additional operational notes</label>
-          <textarea id="operational_notes" name="operational_notes" rows="4" maxlength="1200" placeholder="Optional: Provide coordination details, support contacts, or risk-reduction guidance."></textarea>
-          <p class="field-help">Use this field for client-specific operations, approvals, or coordination notes.</p>
+            <label for="production_environment">Is this live, with real customer data?</label>
+            <select id="production_environment" name="production_environment" required>
+              <option value="no">No — staging, testing, or pre-production</option>
+              <option value="yes">Yes — live production with customer data</option>
+            </select>
+            <p class="field-help">This affects how carefully we need to test.</p>
 
-          <label for="target_type">Target type</label>
-          <input id="target_type" name="target_type" type="text" required maxlength="80" placeholder="Web application / cloud workload" />
+            <label for="authentication_provided">Will the testing team get login credentials?</label>
+            <select id="authentication_provided" name="authentication_provided" required>
+              <option value="yes">Yes — we'll have credentials or API keys</option>
+              <option value="no">No — external, unauthenticated testing only</option>
+            </select>
+            <p class="field-help">This changes what testing is possible.</p>
+          </fieldset>
 
-          <label for="cloud_provider">Cloud provider</label>
-          <select id="cloud_provider" name="cloud_provider" required>
-            {% for provider in cloud_providers %}
-              <option value="{{ provider.key }}">{{ provider.label }}</option>
-            {% endfor %}
-          </select>
+          <fieldset class="form-section">
+            <legend class="section-title">Location & Context</legend>
 
-          <button type="submit">Generate engagement brief</button>
+            <label for="cloud_provider">Is this on a cloud provider?</label>
+            <select id="cloud_provider" name="cloud_provider" required>
+              {% for provider in cloud_providers %}
+                <option value="{{ provider.key }}">{{ provider.label }}</option>
+              {% endfor %}
+            </select>
+            <p class="field-help">AWS, Azure, GCP — or select "Not applicable" if it's on-premises.</p>
+
+            <label for="jurisdiction">Where is this system located?</label>
+            <select id="jurisdiction" name="jurisdiction" required>
+              {% for jurisdiction in jurisdictions %}
+                <option value="{{ jurisdiction.key }}">{{ jurisdiction.label }}</option>
+              {% endfor %}
+            </select>
+            <p class="field-help">This matters for compliance rules that apply.</p>
+          </fieldset>
+
+          <div class="advanced-toggle">
+            <button type="button" id="advanced-toggle-btn" class="toggle-btn">+ Add optional details (timing, special instructions)</button>
+          </div>
+
+          <div id="advanced-section" class="advanced-section" style="display: none;">
+            <fieldset class="form-section">
+              <legend class="section-title">Optional: Timing & Special Instructions</legend>
+
+              <label for="testing_window">When can testing happen?</label>
+              <input id="testing_window" name="testing_window" type="text" maxlength="120" placeholder="e.g., Weekdays 9am–5pm EST, or weekends only" />
+              <p class="field-help">Business hours? Weekends? A specific maintenance window? Leave blank if flexible.</p>
+
+              <label for="operational_notes">Special instructions or things the team should know</label>
+              <textarea id="operational_notes" name="operational_notes" rows="2" maxlength="1200" placeholder="e.g., Use VPN: vpn.example.com"></textarea>
+              <p class="field-help">VPN requirements? Contacts? Anything unusual about the environment?</p>
+              <button type="button" class="example-btn" data-field="operational_notes" data-examples="Contact ops team before large scans&#10;Avoid testing during 8–9pm nightly maintenance&#10;Use VPN: vpn.example.com&#10;Lead contact: john@example.com">Show example</button>
+            </fieldset>
+          </div>
+
+          <div class="confidence-message">
+            <p><strong>Quick tip:</strong> Everything you generate is editable in Word. Start simple — you don't need to be perfect. You can always refine the documents before sending to your client.</p>
+          </div>
+
+          <button type="submit" class="btn-primary">Generate my engagement brief</button>
 
           <script>
             const presetLibrary = {{ engagement_preset_data | tojson }};
@@ -91,6 +157,10 @@
             const exclusionsField = document.getElementById('exclusions');
             const operationalNotesField = document.getElementById('operational_notes');
             const testingWindowField = document.getElementById('testing_window');
+            const advancedToggleBtn = document.getElementById('advanced-toggle-btn');
+            const advancedSection = document.getElementById('advanced-section');
+            const engagementCards = document.querySelectorAll('.engagement-card');
+            const exampleButtons = document.querySelectorAll('.example-btn');
 
             function populateField(value, target) {
               if (!target.value.trim() && value) {
@@ -106,22 +176,60 @@
               populateField(preset.recommended_testing_window || '', testingWindowField);
             }
 
+            exampleButtons.forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const fieldId = btn.dataset.field;
+                const examples = btn.dataset.examples;
+                const field = document.getElementById(fieldId);
+                if (field.value.trim() === '') {
+                  field.value = examples;
+                  btn.textContent = 'Clear example';
+                  field.focus();
+                } else {
+                  field.value = '';
+                  btn.textContent = 'Show example';
+                }
+              });
+            });
+
+            engagementCards.forEach(card => {
+              card.addEventListener('click', () => {
+                const presetKey = card.dataset.preset;
+                presetSelect.value = presetKey;
+                applyPreset(presetKey);
+                document.querySelector('input[name="client_name"]').focus();
+              });
+            });
+
             presetSelect.addEventListener('change', (event) => applyPreset(event.target.value));
             document.addEventListener('DOMContentLoaded', () => applyPreset(presetSelect.value));
+
+            advancedToggleBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              const isHidden = advancedSection.style.display === 'none';
+              advancedSection.style.display = isHidden ? 'block' : 'none';
+              advancedToggleBtn.textContent = isHidden ? '− Hide optional fields' : '+ Show optional fields';
+            });
           </script>
         </form>
       </section>
 
       <section class="panel panel--info">
-        <h2>How it works</h2>
-        <p>RegionGuard uses local jurisdiction profiles, cloud provider guidance, and rules of engagement presets to create a deterministic briefing payload. The output is designed for security teams preparing a consistent engagement package.</p>
+        <h2>New to this?</h2>
+        <p>RegionGuard is built for people who are doing their first security assessment — freelancers, startup founders, junior consultants. You don't need to be a compliance expert.</p>
         <ul>
-          <li>Simple, local-first YAML library</li>
-          <li>Minimal professional UI</li>
-          <li>No cloud dependencies or authentication</li>
+          <li><strong>Fill what you know.</strong> Leave optional fields blank if you're unsure.</li>
+          <li><strong>Examples are optional.</strong> Click "Show example" buttons only when you need help.</li>
+          <li><strong>Everything is editable.</strong> The documents we generate are .docx files — your client will review and approve them anyway.</li>
+          <li><strong>Works offline.</strong> No cloud services, no tracking, no AI.</li>
         </ul>
       </section>
     </main>
+
+    <footer class="footer">
+      <p>Generated engagements are templates. Always review before client delivery.</p>
+    </footer>
   </div>
 </body>
 </html>

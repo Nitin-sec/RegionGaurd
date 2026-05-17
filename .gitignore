@@ -1,15 +1,80 @@
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-.env
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual Environments
 .venv/
 venv/
+env/
+ENV/
+.env.local
+.env.*.local
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logging
 *.log
-*.sqlite3
+logs/
+*.log.*
+
+# Testing and Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+pytest.ini
+.nose*
+
+# Generated Files
 generated/docx/
 generated/pdf/
 generated/packages/
-.idea/
-.vscode/
-.DS_Store
+*.sqlite3
+*.db
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/
+tmp/
+
+# Development
+.ipynb_checkpoints/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Dependency Lock Files (optional - uncomment if using specific version pinning)
+# poetry.lock
+# Pipfile.lock
+docs/dev-notes/
+generated/**/*.docx
+generated/**/*.zip

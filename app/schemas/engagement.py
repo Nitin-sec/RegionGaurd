@@ -9,7 +9,7 @@ class EngagementRequest(BaseModel):
     objectives: str = Field(..., min_length=10, max_length=1200)
     scope_assets: str = Field(..., min_length=10, max_length=1200)
     exclusions: str = Field(..., min_length=10, max_length=1200)
-    testing_window: str = Field(..., min_length=5, max_length=120)
+    testing_window: str = Field(default="To be confirmed", max_length=120)
     production_environment: bool = Field(...)
     authentication_provided: bool = Field(...)
     operational_notes: str = Field(default="", max_length=1200)

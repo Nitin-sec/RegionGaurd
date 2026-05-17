@@ -30,11 +30,11 @@ def generate_summary(
     objectives: str = Form(...),
     scope_assets: str = Form(...),
     exclusions: str = Form(...),
-    testing_window: str = Form(...),
     production_environment: str = Form(...),
     authentication_provided: str = Form(...),
     operational_notes: str = Form(""),
     cloud_provider: str = Form(...),
+    testing_window: str = Form(""),
 ):
     """Build and render a deterministic engagement briefing page from structured form inputs."""
     try:
@@ -46,7 +46,7 @@ def generate_summary(
             objectives=objectives,
             scope_assets=scope_assets,
             exclusions=exclusions,
-            testing_window=testing_window,
+            testing_window=testing_window or "To be confirmed",
             production_environment=production_environment.lower() == "yes",
             authentication_provided=authentication_provided.lower() == "yes",
             operational_notes=operational_notes,
@@ -78,5 +78,7 @@ def generate_summary(
                 "package_file": package_file.name,
             },
         )
-    except ValueError as exc:
+    except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Generation failed: {exc}")

@@ -24,139 +24,136 @@ class DocxGenerator:
 
     def generate_authorization_letter(self, render_data: dict, output_path: Path) -> Path:
         document = self._create_document()
-        self._add_heading(document, "Authorization Letter")
+        self._add_heading(document, "Engagement Authorization")
         self._add_key_value_table(
             document,
             [
                 ("Client", render_data["client_name"]),
-                ("Document date", date.today().strftime("%B %d, %Y")),
-                ("Jurisdiction", render_data["jurisdiction_name"]),
-                ("Engagement preset", render_data["engagement_preset_name"]),
+                ("Date prepared", date.today().strftime("%B %d, %Y")),
+                ("Engagement type", render_data["engagement_preset_name"]),
+                ("Target systems", render_data["target_type"]),
+                ("Testing location", render_data["jurisdiction_name"]),
                 ("Cloud provider", render_data["cloud_provider_name"]),
-                ("Target type", render_data["target_type"]),
-                ("Testing window", render_data["testing_window"]),
-                ("Production environment", "Yes" if render_data["production_environment"] else "No"),
-                ("Authentication provided", "Yes" if render_data["authentication_provided"] else "No"),
             ],
         )
 
         self._add_paragraph(
             document,
-            "This authorization letter confirms the security engagement may proceed under the documented operational boundaries.",
+            "This document confirms that the client has approved the security assessment to proceed within the described scope and timeline.",
         )
-        self._add_section(document, "Engagement objectives", render_data.get("objectives_list", [render_data.get("objectives_text", "")]))
-        self._add_section(document, "Supported scope", render_data.get("scope_assets_list", [render_data.get("scope_text", "")]))
+        self._add_section(document, "Approval", [
+            "The client authorizes testing of the in-scope systems listed below.",
+            "Testing will occur during the approved timeframe and will respect the exclusions stated.",
+        ])
+        self._add_section(document, "Assessment goals", render_data.get("objectives_list", [render_data.get("objectives_text", "")]))
+        self._add_section(document, "Systems in scope", render_data.get("scope_assets_list", [render_data.get("scope_text", "")]))
 
         if render_data.get("operational_notes"):
-            self._add_section(document, "Operational notes", [render_data["operational_notes"]])
+            self._add_section(document, "Special instructions", [render_data["operational_notes"]])
 
-        self._add_section(document, "Authorization statement", [
-            "The client has authorized the assessment activities described in the scope definition.",
-            "Testing will remain aligned with jurisdiction requirements, cloud provider expectations, and client operational constraints.",
+        self._add_paragraph(document, "Authorized testing", bold=True)
+        self._add_section(document, "", [
+            "Active security testing of approved systems and networks.",
+            "Configuration and access control review.",
+            "Reporting of findings with context and recommendations.",
         ])
-        self._add_section(document, "Approved testing statement", [
-            "Permitted engagement activities are limited to the authorized assets and objectives.",
-            "No actions outside the approved engagement should be taken without separate authorization.",
-        ])
-        self._add_paragraph(document, "Signatory approval", bold=True)
-        self._add_paragraph(document, "Client representative: _________________________________")
+        self._add_paragraph(document, "Signature", bold=True)
+        self._add_paragraph(document, "Client authorized representative: _________________________________")
         self._add_paragraph(document, "Assessment lead: _________________________________")
         self._add_paragraph(document, "Date: _________________________________")
-        self._add_paragraph(document, "Disclaimer", bold=True)
-        self._add_paragraph(
-            document,
-            "This document supports operational coordination and does not replace formal contractual terms.",
-        )
+
         document.save(output_path)
         return output_path
 
     def generate_rules_of_engagement(self, render_data: dict, output_path: Path) -> Path:
         document = self._create_document()
         self._add_heading(document, "Rules of Engagement")
-        self._add_paragraph(document, "This document defines the operational conditions and expectations for the engagement.")
+        self._add_paragraph(document, "This document outlines how the assessment will be conducted and what to expect.")
 
-        self._add_section(document, "Permitted activities", [
-            "Testing authorized targets and assets within the documented engagement scope.",
-            "Reviewing configuration, access control, and security posture.",
-            "Reporting findings in clear and deterministic language.",
+        self._add_section(document, "What we will test", [
+            "Active testing of authorized systems and network boundaries.",
+            "Configuration review and access control verification.",
+            "Documentation of findings with clear, actionable recommendations.",
         ])
+
+        self._add_section(document, "What we will not do", [
+            "Test outside the defined scope.",
+            "Perform denial-of-service or sustained load testing (unless separately approved).",
+            "Conduct social engineering or physical security testing.",
+        ])
+
         if render_data.get("preset_roe_notes"):
-            self._add_section(document, "Engagement guidance", render_data["preset_roe_notes"])
+            self._add_section(document, "Special guidance", render_data["preset_roe_notes"])
 
-        self._add_section(document, "Prohibited activities", [
-            "Unauthorized testing outside the defined scope.",
-            "Denial-of-service techniques unless explicitly approved.",
-            "Social engineering or physical security testing unless separately agreed.",
-        ])
-
-        self._add_section(document, "Communication expectations", [
-            "The assessment team will provide timely status updates for critical findings.",
-            "Communication will be coordinated through the designated client contact.",
-            "All findings will be documented with operational context and impact statements.",
-        ])
-
-        self._add_section(document, "Escalation procedures", [
-            "Significant issues will be escalated immediately to the client contact.",
-            "Operational risks will be documented and reviewed without delay.",
-            "Escalation will preserve evidence integrity and maintain transparency.",
+        self._add_section(document, "Communication during testing", [
+            "The team will be available during the testing window for operational questions.",
+            "Critical findings will be reported immediately.",
+            "We will coordinate changes that might impact the business.",
         ])
 
         if render_data.get("testing_window"):
             self._add_section(document, "Testing window", [render_data["testing_window"]])
+
         if render_data.get("preset_testing_window"):
             self._add_section(document, "Recommended timing", [render_data["preset_testing_window"]])
 
         if render_data.get("preset_operational_considerations"):
-            self._add_section(document, "Operational considerations", render_data["preset_operational_considerations"])
+            self._add_section(document, "Key things to know", render_data["preset_operational_considerations"])
 
+        self._add_paragraph(document, "Questions?", bold=True)
+        self._add_paragraph(document, "Ask the assessment lead before testing begins if anything is unclear.")
         document.save(output_path)
         return output_path
 
     def generate_scope_definition(self, render_data: dict, output_path: Path) -> Path:
         document = self._create_document()
         self._add_heading(document, "Scope Definition")
-        self._add_paragraph(document, "This document describes the in-scope assets, exclusions, environment controls, and testing context.")
+        self._add_paragraph(document, "This is what we're testing and what we're not testing.")
 
         self._add_key_value_table(
             document,
             [
                 ("Client", render_data["client_name"]),
-                ("Target type", render_data["target_type"]),
-                ("Engagement preset", render_data["engagement_preset_name"]),
-                ("Jurisdiction", render_data["jurisdiction_name"]),
+                ("Assessment type", render_data["engagement_preset_name"]),
+                ("Target description", render_data["target_type"]),
+                ("Testing location", render_data["jurisdiction_name"]),
                 ("Cloud provider", render_data["cloud_provider_name"]),
             ],
         )
 
         if render_data.get("objectives_list"):
-            self._add_section(document, "Engagement objectives", render_data["objectives_list"])
+            self._add_section(document, "What we're assessing", render_data["objectives_list"])
 
         if render_data.get("scope_assets_list"):
-            self._add_section(document, "In-scope assets", render_data["scope_assets_list"])
+            self._add_section(document, "What will be tested", render_data["scope_assets_list"])
 
         if render_data.get("exclusions_list"):
-            self._add_section(document, "Exclusions", render_data["exclusions_list"])
+            self._add_section(document, "Out of scope (do not test)", render_data["exclusions_list"])
 
-        scope_metadata = [
-            f"Testing window: {render_data['testing_window']}",
-            f"Production environment: {'Yes' if render_data['production_environment'] else 'No'}",
-            f"Authentication provided: {'Yes' if render_data['authentication_provided'] else 'No'}",
-        ]
-        self._add_section(document, "Engagement context", scope_metadata)
+        scope_metadata = []
+        scope_metadata.append(f"Testing window: {render_data['testing_window']}")
+        if render_data['production_environment']:
+            scope_metadata.append("This includes live production systems with real customer data.")
+        else:
+            scope_metadata.append("This is testing against staging or pre-production systems.")
+        if render_data['authentication_provided']:
+            scope_metadata.append("Credentials or API keys will be provided.")
+        else:
+            scope_metadata.append("Assessment is external/unauthenticated.")
+        self._add_section(document, "Key details", scope_metadata)
 
         if render_data.get("operational_notes"):
-            self._add_section(document, "Operational notes", [render_data["operational_notes"]])
+            self._add_section(document, "Special instructions", [render_data["operational_notes"]])
 
-        self._add_section(document, "Cloud provider context", [
-            f"Cloud provider: {render_data['cloud_provider_name']}",
-            render_data.get("cloud_provider_summary", "No provider summary is available."),
+        self._add_section(document, f"{render_data['cloud_provider_name']} context", [
+            render_data.get("cloud_provider_summary", ""),
         ])
 
         provider_controls = render_data.get("cloud_provider_controls", [])
         if provider_controls:
-            self._add_section(document, "Cloud operational considerations", provider_controls)
+            self._add_section(document, "Cloud built-in controls", provider_controls)
 
-        self._add_paragraph(document, "The scope definition supports operational planning, client agreement, and testing coordination.")
+        self._add_paragraph(document, "This scope is designed for operational clarity. Review before client handoff.")
         document.save(output_path)
         return output_path
 
@@ -178,14 +175,16 @@ class DocxGenerator:
 
     def _add_paragraph(self, document: Document, text: str, bold: bool = False) -> None:
         paragraph = document.add_paragraph(text)
-        run = paragraph.runs[0]
-        run.bold = bold
+        if paragraph.runs:
+            paragraph.runs[0].bold = bold
         paragraph.space_after = Pt(8)
 
     def _add_section(self, document: Document, heading: str, points: list[str]) -> None:
-        self._add_paragraph(document, heading, bold=True)
+        if heading:
+            self._add_paragraph(document, heading, bold=True)
         for item in points:
-            self._add_bullet(document, item)
+            if item:
+                self._add_bullet(document, item)
 
     def _add_bullet(self, document: Document, text: str) -> None:
         paragraph = document.add_paragraph(text, style="List Bullet")
@@ -199,6 +198,7 @@ class DocxGenerator:
             row = table.add_row().cells
             row[0].text = label
             row[1].text = value
-            row[0].paragraphs[0].runs[0].bold = True
+            if row[0].paragraphs[0].runs:
+                row[0].paragraphs[0].runs[0].bold = True
         table.autofit = True
         document.add_paragraph()
