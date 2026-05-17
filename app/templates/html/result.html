@@ -8,145 +8,168 @@
 </head>
 <body>
   <div class="page-shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">RegionGuard Brief</p>
-        <h1>Engagement overview</h1>
-        <p>Review the briefing inputs and supporting guidance generated from regional and cloud documents.</p>
+
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark">RG</div>
+        <span class="brand-name">RegionGuard</span>
+        <span class="brand-tagline">— Engagement Brief</span>
       </div>
+      <span class="header-meta">Offline · No tracking</span>
     </header>
 
-    <main class="content-grid">
-      <section class="panel panel--highlight">
-        <h2>Engagement approved</h2>
-        <p>Review your scope below. If everything looks right, download your documents.</p>
-        <dl class="summary-grid">
-          <div class="summary-item">
+    <a href="/" class="back-link">← Start a new engagement</a>
+
+    <!-- Result hero -->
+    <div class="result-hero">
+      <h1>{{ render.client_name }} — Engagement brief ready</h1>
+      <p>Review the scope below. Download your documents when everything looks right.</p>
+      <div class="result-meta">
+        <span class="meta-chip">{{ render.engagement_preset_name }}</span>
+        <span class="meta-chip">{{ render.jurisdiction_name }}</span>
+        <span class="meta-chip">{{ render.cloud_provider_name }}</span>
+        {% if render.production_environment %}
+          <span class="meta-chip chip--warn">⚠ Production</span>
+        {% else %}
+          <span class="meta-chip">Non-production</span>
+        {% endif %}
+        {% if render.authentication_provided %}
+          <span class="meta-chip">Auth provided</span>
+        {% else %}
+          <span class="meta-chip">Unauthenticated</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="result-workspace">
+
+      <!-- Engagement summary -->
+      <div class="result-card">
+        <h2>Engagement summary</h2>
+        <dl class="result-summary-grid">
+          <div>
             <dt>Client</dt>
             <dd>{{ render.client_name }}</dd>
           </div>
-          <div class="summary-item">
-            <dt>Engagement type</dt>
+          <div>
+            <dt>Type</dt>
             <dd>{{ render.engagement_preset_name }}</dd>
           </div>
-          <div class="summary-item">
+          <div>
             <dt>Target</dt>
             <dd>{{ render.target_type }}</dd>
           </div>
-          <div class="summary-item">
-            <dt>Location</dt>
-            <dd>{{ render.jurisdiction_name }}</dd>
-          </div>
-          <div class="summary-item">
+          <div>
             <dt>Testing window</dt>
             <dd>{{ render.testing_window }}</dd>
           </div>
-          <div class="summary-item">
-            <dt>Production?</dt>
-            <dd>{{ 'Yes' if render.production_environment else 'No' }}</dd>
+          <div>
+            <dt>Location</dt>
+            <dd>{{ render.jurisdiction_name }}</dd>
           </div>
-          <div class="summary-item">
-            <dt>Auth provided?</dt>
-            <dd>{{ 'Yes' if render.authentication_provided else 'No' }}</dd>
-          </div>
-          <div class="summary-item">
-            <dt>Cloud provider</dt>
+          <div>
+            <dt>Cloud</dt>
             <dd>{{ render.cloud_provider_name }}</dd>
           </div>
         </dl>
-      </section>
+      </div>
 
-      <section class="panel">
-        <h2>Goals</h2>
+      <!-- Goals -->
+      <div class="result-card">
+        <h2>Assessment goals</h2>
         <ul>
           {% for objective in render.objectives_list %}
             <li>{{ objective }}</li>
           {% endfor %}
         </ul>
-      </section>
+      </div>
 
-      <section class="panel">
+      <!-- Scope -->
+      <div class="result-card">
         <h2>What will be tested</h2>
         <ul>
           {% for asset in render.scope_assets_list %}
             <li>{{ asset }}</li>
           {% endfor %}
         </ul>
-      </section>
+      </div>
 
-      <section class="panel panel--warning">
+      <!-- Exclusions -->
+      <div class="result-card result-card--warning">
         <h2>Out of scope</h2>
-        <p class="warning-intro">Make sure the client agrees these are excluded:</p>
         <ul>
           {% for exclusion in render.exclusions_list %}
             <li>{{ exclusion }}</li>
           {% endfor %}
         </ul>
-      </section>
+      </div>
 
-      {% if render.operational_notes %}
-      <section class="panel">
-        <h2>Special instructions</h2>
-        <p>{{ render.operational_notes }}</p>
-      </section>
-      {% endif %}
-
-      <section class="panel">
+      <!-- Preset guidance -->
+      <div class="result-card">
         <h2>{{ render.engagement_preset_name }} guidance</h2>
         <p>{{ render.engagement_preset_description }}</p>
         {% if render.preset_operational_considerations %}
-          <h3>Key considerations</h3>
-          <ul>
+          <ul style="margin-top:10px;">
             {% for item in render.preset_operational_considerations %}
               <li>{{ item }}</li>
             {% endfor %}
           </ul>
         {% endif %}
-      </section>
+      </div>
 
-      <section class="panel">
+      <!-- Jurisdiction context -->
+      <div class="result-card">
         <h2>{{ render.jurisdiction_name }} context</h2>
         <p>{{ render.jurisdiction_overview }}</p>
         {% if render.jurisdiction_frameworks %}
-          <h3>Relevant standards</h3>
-          <ul>
+          <ul style="margin-top:10px;">
             {% for framework in render.jurisdiction_frameworks %}
               <li>{{ framework }}</li>
             {% endfor %}
           </ul>
         {% endif %}
         <p class="note"><strong>Data residency:</strong> {{ render.jurisdiction_data_residency }}</p>
-      </section>
+      </div>
 
-      <section class="panel">
+      <!-- Cloud context -->
+      <div class="result-card">
         <h2>{{ render.cloud_provider_name }} context</h2>
         <p>{{ render.cloud_provider_summary }}</p>
         {% if render.cloud_provider_controls %}
-          <h3>Built-in controls</h3>
-          <ul>
+          <ul style="margin-top:10px;">
             {% for control in render.cloud_provider_controls %}
               <li>{{ control }}</li>
             {% endfor %}
           </ul>
         {% endif %}
-      </section>
+      </div>
 
+      {% if render.operational_notes %}
+      <!-- Special instructions -->
+      <div class="result-card">
+        <h2>Special instructions</h2>
+        <p>{{ render.operational_notes }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Downloads — always full width -->
       {% if download_files %}
-      <section class="panel panel--download">
+      <div class="result-card result-card--download result-card--full">
         <h2>Download your documents</h2>
-        <p>Three files, ready to customize:</p>
-        <ul class="download-list">
+        <ul class="download-links">
           {% for file in download_files %}
             <li><a class="link-button" href="/download/docx/{{ file.name }}">{{ file.label }}</a></li>
           {% endfor %}
         </ul>
-        <p><a class="link-button" href="/download/package/{{ package_file }}">Download all as ZIP</a></p>
-      </section>
+        <a class="link-button link-button--zip" href="/download/package/{{ package_file }}">⬇ Download all as ZIP</a>
+      </div>
       {% endif %}
-    </main>
+
+    </div>
+    <!-- end .result-workspace -->
 
     <footer class="footer">
-      <p>RegionGuard does not provide legal advice.</p>
+      <p>RegionGuard does not provide legal advice. Generated documents are templates — review before client delivery.</p>
     </footer>
   </div>
 </body>

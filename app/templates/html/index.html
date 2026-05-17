@@ -8,228 +8,557 @@
 </head>
 <body>
   <div class="page-shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">RegionGuard</p>
-        <h1>Prepare your next engagement</h1>
-        <p>Build a structured, client-approved scope for your security assessment. Works offline, no cloud dependencies.</p>
+
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark">RG</div>
+        <span class="brand-name">RegionGuard</span>
+        <span class="brand-tagline">— Engagement Preparation</span>
       </div>
+      <span class="header-meta">Offline · No tracking</span>
     </header>
 
-    <main class="content-grid">
-      <section class="panel panel--onboarding">
-        <h2>Your engagement in 4 steps</h2>
-        <p class="onboarding-intro">This helps you build a professional security assessment plan with your client — without needing to be an expert in compliance terminology.</p>
-        <div class="steps-grid">
-          <div class="step">
-            <div class="step-number">1</div>
-            <h3>What are you testing?</h3>
-            <p>Website, API, cloud infrastructure — tell us the type.</p>
+    <div class="workspace">
+
+      <!-- ── LEFT: form column ─────────────────────────────────────────────── -->
+      <div class="form-column">
+
+        <!-- Quick-start cards -->
+        <div class="card">
+          <div class="card-header">
+            <span class="section-icon">⚡</span>
+            <h2>Quick start — pick your engagement type</h2>
           </div>
-          <div class="step">
-            <div class="step-number">2</div>
-            <h3>What systems?</h3>
-            <p>Specific URLs, IPs, or cloud accounts you're assessing.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">3</div>
-            <h3>Set boundaries</h3>
-            <p>What's off-limits, when testing happens, who has access.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">4</div>
-            <h3>Documents ready</h3>
-            <p>Generate editable word documents your client can review.</p>
+          <p class="quickstart-intro">Select a type to pre-fill objectives, exclusions, and timing. Adjust everything below.</p>
+          <div class="preset-grid" id="preset-cards-container">
+            {% for preset in engagement_presets %}
+            <button
+              type="button"
+              class="preset-card"
+              data-preset="{{ preset.key }}"
+              id="card-{{ preset.key }}"
+            >
+              <span class="preset-name">{{ preset.label }}</span>
+              <span class="preset-desc" id="card-desc-{{ preset.key }}"></span>
+            </button>
+            {% endfor %}
           </div>
         </div>
-      </section>
 
-      <section class="panel">
-        <h2>Build your engagement</h2>
-        <p class="intro-help">Fill in what you know. You can edit everything later. Leave optional fields blank if needed.</p>
-        <form method="post" action="/generate">
-          <fieldset class="form-section">
-            <legend class="section-title">The Basics</legend>
+        <!-- Validation banner (only shown on re-render after errors) -->
+        {% if field_errors %}
+        <div class="form-error-banner" role="alert">
+          Some fields need attention — see the highlighted fields below.
+        </div>
+        {% endif %}
 
-            <label for="client_name">Client name</label>
-            <input id="client_name" name="client_name" type="text" required maxlength="120" placeholder="e.g., Acme Corp" />
-            <p class="field-help">Who are you doing this assessment for?</p>
+        <!-- Main form -->
+        <form method="post" action="/generate" id="engagement-form" novalidate>
 
-            <label for="engagement_preset">What type of system are you assessing?</label>
-            <select id="engagement_preset" name="engagement_preset" required>
-              {% for preset in engagement_presets %}
-                <option value="{{ preset.key }}">{{ preset.label }}</option>
-              {% endfor %}
-            </select>
-            <p class="field-help">Choose the one that fits best. (We'll suggest relevant details for this type.)</p>
-
-            <label for="target_type">Describe the target in one line</label>
-            <input id="target_type" name="target_type" type="text" required maxlength="80" placeholder="e.g., Customer web app on AWS" />
-            <p class="field-help">Keep it short. This shows up in your engagement summary.</p>
-          </fieldset>
-
-          <fieldset class="form-section">
-            <legend class="section-title">What Gets Tested</legend>
-
-            <label for="scope_assets">List the systems or assets in scope</label>
-            <textarea id="scope_assets" name="scope_assets" rows="3" required maxlength="1200" placeholder="One per line (e.g., https://app.example.com)"></textarea>
-            <p class="field-help">Be specific. URLs, IP ranges, cloud accounts — whatever you'll be testing.</p>
-            <button type="button" class="example-btn" data-field="scope_assets" data-examples="https://app.example.com&#10;/api/users&#10;/api/auth&#10;API gateway">Show example</button>
-
-            <label for="objectives">What are the main goals of this assessment?</label>
-            <textarea id="objectives" name="objectives" rows="2" required maxlength="1200" placeholder="e.g., Find login weaknesses"></textarea>
-            <p class="field-help">What should your client care about? What security issues are you looking for?</p>
-            <button type="button" class="example-btn" data-field="objectives" data-examples="Find authentication weaknesses&#10;Test access controls&#10;Verify input validation&#10;Check for data exposure">Show example</button>
-          </fieldset>
-
-          <fieldset class="form-section">
-            <legend class="section-title">Set Boundaries</legend>
-
-            <label for="exclusions">What should NOT be tested?</label>
-            <textarea id="exclusions" name="exclusions" rows="2" required maxlength="1200" placeholder="e.g., Payment processing (handled by vendor)"></textarea>
-            <p class="field-help">Be clear about what's off-limits. This protects both you and the client.</p>
-            <button type="button" class="example-btn" data-field="exclusions" data-examples="Payment processing&#10;Third-party integrations&#10;Production database&#10;Denial-of-service testing">Show example</button>
-
-            <label for="production_environment">Is this live, with real customer data?</label>
-            <select id="production_environment" name="production_environment" required>
-              <option value="no">No — staging, testing, or pre-production</option>
-              <option value="yes">Yes — live production with customer data</option>
-            </select>
-            <p class="field-help">This affects how carefully we need to test.</p>
-
-            <label for="authentication_provided">Will the testing team get login credentials?</label>
-            <select id="authentication_provided" name="authentication_provided" required>
-              <option value="yes">Yes — we'll have credentials or API keys</option>
-              <option value="no">No — external, unauthenticated testing only</option>
-            </select>
-            <p class="field-help">This changes what testing is possible.</p>
-          </fieldset>
-
-          <fieldset class="form-section">
-            <legend class="section-title">Location & Context</legend>
-
-            <label for="cloud_provider">Is this on a cloud provider?</label>
-            <select id="cloud_provider" name="cloud_provider" required>
-              {% for provider in cloud_providers %}
-                <option value="{{ provider.key }}">{{ provider.label }}</option>
-              {% endfor %}
-            </select>
-            <p class="field-help">AWS, Azure, GCP — or select "Not applicable" if it's on-premises.</p>
-
-            <label for="jurisdiction">Where is this system located?</label>
-            <select id="jurisdiction" name="jurisdiction" required>
-              {% for jurisdiction in jurisdictions %}
-                <option value="{{ jurisdiction.key }}">{{ jurisdiction.label }}</option>
-              {% endfor %}
-            </select>
-            <p class="field-help">This matters for compliance rules that apply.</p>
-          </fieldset>
-
-          <div class="advanced-toggle">
-            <button type="button" id="advanced-toggle-btn" class="toggle-btn">+ Add optional details (timing, special instructions)</button>
-          </div>
-
-          <div id="advanced-section" class="advanced-section" style="display: none;">
+          <!-- Step 1: The Basics -->
+          <div class="card">
+            <div class="card-header">
+              <span class="step-badge">1</span>
+              <h2>The basics</h2>
+            </div>
             <fieldset class="form-section">
-              <legend class="section-title">Optional: Timing & Special Instructions</legend>
+              <legend class="sr-only">The basics</legend>
+              <div class="form-fields">
 
-              <label for="testing_window">When can testing happen?</label>
-              <input id="testing_window" name="testing_window" type="text" maxlength="120" placeholder="e.g., Weekdays 9am–5pm EST, or weekends only" />
-              <p class="field-help">Business hours? Weekends? A specific maintenance window? Leave blank if flexible.</p>
+                <div class="field-row field-row--2col">
+                  <div class="field-group">
+                    <label for="client_name">Client name</label>
+                    <input
+                      id="client_name" name="client_name" type="text"
+                      maxlength="120" placeholder="e.g., Acme Corp" autocomplete="off"
+                      value="{{ form_values.client_name if form_values else '' }}"
+                      class="{{ 'input--invalid' if field_errors and field_errors.client_name else '' }}"
+                    />
+                    {% if field_errors and field_errors.client_name %}
+                      <span class="field-error">{{ field_errors.client_name }}</span>
+                    {% else %}
+                      <p class="field-help">Who is this assessment for?</p>
+                    {% endif %}
+                  </div>
+                  <div class="field-group">
+                    <label for="target_type">Target description</label>
+                    <input
+                      id="target_type" name="target_type" type="text"
+                      maxlength="80" placeholder="e.g., Customer web app on AWS"
+                      value="{{ form_values.target_type if form_values else '' }}"
+                      class="{{ 'input--invalid' if field_errors and field_errors.target_type else '' }}"
+                    />
+                    {% if field_errors and field_errors.target_type %}
+                      <span class="field-error">{{ field_errors.target_type }}</span>
+                    {% else %}
+                      <p class="field-help">One line — appears in your documents.</p>
+                    {% endif %}
+                  </div>
+                </div>
 
-              <label for="operational_notes">Special instructions or things the team should know</label>
-              <textarea id="operational_notes" name="operational_notes" rows="2" maxlength="1200" placeholder="e.g., Use VPN: vpn.example.com"></textarea>
-              <p class="field-help">VPN requirements? Contacts? Anything unusual about the environment?</p>
-              <button type="button" class="example-btn" data-field="operational_notes" data-examples="Contact ops team before large scans&#10;Avoid testing during 8–9pm nightly maintenance&#10;Use VPN: vpn.example.com&#10;Lead contact: john@example.com">Show example</button>
+                <div class="field-group">
+                  <label for="engagement_preset">Engagement type</label>
+                  <select id="engagement_preset" name="engagement_preset" required>
+                    {% for preset in engagement_presets %}
+                      <option value="{{ preset.key }}"
+                        {% if form_values and form_values.engagement_preset == preset.key %}selected{% endif %}
+                      >{{ preset.label }}</option>
+                    {% endfor %}
+                  </select>
+                  <p class="field-help">Drives suggested scope, exclusions, and timing.</p>
+                </div>
+
+              </div>
             </fieldset>
           </div>
 
-          <div class="confidence-message">
-            <p><strong>Quick tip:</strong> Everything you generate is editable in Word. Start simple — you don't need to be perfect. You can always refine the documents before sending to your client.</p>
+          <!-- Step 2: What Gets Tested -->
+          <div class="card">
+            <div class="card-header">
+              <span class="step-badge">2</span>
+              <h2>What gets tested</h2>
+            </div>
+            <fieldset class="form-section">
+              <legend class="sr-only">What gets tested</legend>
+              <div class="form-fields">
+
+                <div class="field-group">
+                  <label for="scope_assets">Systems and assets in scope</label>
+                  <textarea
+                    id="scope_assets" name="scope_assets" rows="3" maxlength="1200"
+                    placeholder="One per line — URLs, IP ranges, cloud accounts, API endpoints…"
+                    class="{{ 'input--invalid' if field_errors and field_errors.scope_assets else '' }}"
+                  >{{ form_values.scope_assets if form_values else '' }}</textarea>
+                  {% if field_errors and field_errors.scope_assets %}
+                    <span class="field-error">{{ field_errors.scope_assets }}</span>
+                  {% else %}
+                    <p class="field-help">Be specific. This goes directly into the scope document.</p>
+                  {% endif %}
+                  <button type="button" class="example-btn" data-field="scope_assets" data-examples="https://app.example.com&#10;/api/users&#10;/api/auth&#10;API gateway">Show example</button>
+                </div>
+
+                <div class="field-group">
+                  <label for="objectives">Assessment goals</label>
+                  <textarea
+                    id="objectives" name="objectives" rows="2" maxlength="1200"
+                    placeholder="e.g., Find login weaknesses, test access controls…"
+                    class="{{ 'input--invalid' if field_errors and field_errors.objectives else '' }}"
+                  >{{ form_values.objectives if form_values else '' }}</textarea>
+                  {% if field_errors and field_errors.objectives %}
+                    <span class="field-error">{{ field_errors.objectives }}</span>
+                  {% else %}
+                    <p class="field-help">What security issues are you looking for?</p>
+                  {% endif %}
+                  <button type="button" class="example-btn" data-field="objectives" data-examples="Find authentication weaknesses&#10;Test access controls&#10;Verify input validation&#10;Check for data exposure">Show example</button>
+                </div>
+
+              </div>
+            </fieldset>
           </div>
 
-          <button type="submit" class="btn-primary">Generate my engagement brief</button>
+          <!-- Step 3: Boundaries -->
+          <div class="card">
+            <div class="card-header">
+              <span class="step-badge">3</span>
+              <h2>Set boundaries</h2>
+            </div>
+            <fieldset class="form-section">
+              <legend class="sr-only">Set boundaries</legend>
+              <div class="form-fields">
 
-          <script>
-            const presetLibrary = {{ engagement_preset_data | tojson }};
-            const presetSelect = document.getElementById('engagement_preset');
-            const objectivesField = document.getElementById('objectives');
-            const exclusionsField = document.getElementById('exclusions');
-            const operationalNotesField = document.getElementById('operational_notes');
-            const testingWindowField = document.getElementById('testing_window');
-            const advancedToggleBtn = document.getElementById('advanced-toggle-btn');
-            const advancedSection = document.getElementById('advanced-section');
-            const engagementCards = document.querySelectorAll('.engagement-card');
-            const exampleButtons = document.querySelectorAll('.example-btn');
+                <div class="field-group">
+                  <label for="exclusions">Out of scope — do not test</label>
+                  <textarea
+                    id="exclusions" name="exclusions" rows="2" maxlength="1200"
+                    placeholder="e.g., Payment processing (handled by vendor)"
+                    class="{{ 'input--invalid' if field_errors and field_errors.exclusions else '' }}"
+                  >{{ form_values.exclusions if form_values else '' }}</textarea>
+                  {% if field_errors and field_errors.exclusions %}
+                    <span class="field-error">{{ field_errors.exclusions }}</span>
+                  {% else %}
+                    <p class="field-help">Protects both you and the client.</p>
+                  {% endif %}
+                  <button type="button" class="example-btn" data-field="exclusions" data-examples="Payment processing&#10;Third-party integrations&#10;Production database&#10;Denial-of-service testing">Show example</button>
+                </div>
 
-            function populateField(value, target) {
-              if (!target.value.trim() && value) {
-                target.value = value;
-              }
-            }
+              </div>
+            </fieldset>
+          </div>
 
-            function applyPreset(key) {
-              const preset = presetLibrary[key] || {};
-              populateField((preset.default_objectives || []).join('\n'), objectivesField);
-              populateField((preset.default_exclusions || []).join('\n'), exclusionsField);
-              populateField(preset.operational_considerations ? preset.operational_considerations.join('\n') : '', operationalNotesField);
-              populateField(preset.recommended_testing_window || '', testingWindowField);
-            }
+          <!-- Step 4: Location & Context -->
+          <div class="card">
+            <div class="card-header">
+              <span class="step-badge">4</span>
+              <h2>Location &amp; context</h2>
+            </div>
+            <fieldset class="form-section">
+              <legend class="sr-only">Location and context</legend>
+              <div class="form-fields">
 
-            exampleButtons.forEach(btn => {
-              btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const fieldId = btn.dataset.field;
-                const examples = btn.dataset.examples;
-                const field = document.getElementById(fieldId);
-                if (field.value.trim() === '') {
-                  field.value = examples;
-                  btn.textContent = 'Clear example';
-                  field.focus();
-                } else {
-                  field.value = '';
-                  btn.textContent = 'Show example';
-                }
-              });
-            });
+                <div class="field-row field-row--2col">
+                  <div class="field-group">
+                    <label for="cloud_provider">Cloud provider</label>
+                    <select id="cloud_provider" name="cloud_provider" required>
+                      {% for provider in cloud_providers %}
+                        <option value="{{ provider.key }}"
+                          {% if form_values and form_values.cloud_provider == provider.key %}selected{% endif %}
+                        >{{ provider.label }}</option>
+                      {% endfor %}
+                    </select>
+                    <p class="field-help">AWS, Azure, GCP, or on-premises.</p>
+                  </div>
+                  <div class="field-group">
+                    <label for="jurisdiction">Jurisdiction</label>
+                    <select id="jurisdiction" name="jurisdiction" required>
+                      {% for jurisdiction in jurisdictions %}
+                        <option value="{{ jurisdiction.key }}"
+                          {% if form_values and form_values.jurisdiction == jurisdiction.key %}selected{% endif %}
+                        >{{ jurisdiction.label }}</option>
+                      {% endfor %}
+                    </select>
+                    <p class="field-help">Determines compliance rules.</p>
+                  </div>
+                </div>
 
-            engagementCards.forEach(card => {
-              card.addEventListener('click', () => {
-                const presetKey = card.dataset.preset;
-                presetSelect.value = presetKey;
-                applyPreset(presetKey);
-                document.querySelector('input[name="client_name"]').focus();
-              });
-            });
+              </div>
+            </fieldset>
+          </div>
 
-            presetSelect.addEventListener('change', (event) => applyPreset(event.target.value));
-            document.addEventListener('DOMContentLoaded', () => applyPreset(presetSelect.value));
+          <!-- Advanced options -->
+          <div class="card">
+            <div class="advanced-toggle">
+              <button type="button" id="advanced-toggle-btn" class="toggle-btn">+ Operational details — environment, access &amp; timing (optional)</button>
+            </div>
+            <div id="advanced-section" class="advanced-section" style="display:none;">
+              <fieldset class="form-section">
+                <legend class="sr-only">Operational details</legend>
+                <div class="form-fields" style="margin-top:16px;">
 
-            advancedToggleBtn.addEventListener('click', (e) => {
-              e.preventDefault();
-              const isHidden = advancedSection.style.display === 'none';
-              advancedSection.style.display = isHidden ? 'block' : 'none';
-              advancedToggleBtn.textContent = isHidden ? '− Hide optional fields' : '+ Show optional fields';
-            });
-          </script>
+                  <div class="field-row field-row--2col">
+                    <div class="field-group">
+                      <label for="production_environment">Live production environment?</label>
+                      <select id="production_environment" name="production_environment">
+                        <option value="no" {% if not form_values or form_values.production_environment != 'yes' %}selected{% endif %}>No — staging / pre-production</option>
+                        <option value="yes" {% if form_values and form_values.production_environment == 'yes' %}selected{% endif %}>Yes — live with customer data</option>
+                      </select>
+                      <p class="field-help">Affects how carefully we need to test.</p>
+                    </div>
+                    <div class="field-group">
+                      <label for="authentication_provided">Credentials provided?</label>
+                      <select id="authentication_provided" name="authentication_provided">
+                        <option value="yes" {% if form_values and form_values.authentication_provided == 'yes' %}selected{% endif %}>Yes — credentials or API keys</option>
+                        <option value="no" {% if not form_values or form_values.authentication_provided != 'yes' %}selected{% endif %}>No — external / unauthenticated</option>
+                      </select>
+                      <p class="field-help">Changes what testing is possible.</p>
+                    </div>
+                  </div>
+
+                  <div class="field-group">
+                    <label for="testing_window">Testing window</label>
+                    <input
+                      id="testing_window" name="testing_window" type="text"
+                      maxlength="120" placeholder="e.g., Weekdays 9am–5pm EST, or weekends only"
+                      value="{{ form_values.testing_window if form_values else '' }}"
+                    />
+                    <p class="field-help">Leave blank if flexible — defaults to "To be confirmed".</p>
+                  </div>
+
+                  <div class="field-group">
+                    <label for="operational_notes">Special instructions</label>
+                    <textarea
+                      id="operational_notes" name="operational_notes" rows="2" maxlength="1200"
+                      placeholder="e.g., Use VPN: vpn.example.com, contact ops before large scans"
+                    >{{ form_values.operational_notes if form_values else '' }}</textarea>
+                    <p class="field-help">VPN requirements, contacts, anything unusual about the environment.</p>
+                    <button type="button" class="example-btn" data-field="operational_notes" data-examples="Contact ops team before large scans&#10;Avoid testing during 8–9pm nightly maintenance&#10;Use VPN: vpn.example.com&#10;Lead contact: ops@example.com">Show example</button>
+                  </div>
+
+                </div>
+              </fieldset>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="card card--accent">
+            <button type="submit" class="btn-primary">Generate engagement documents →</button>
+            <p class="submit-note">Generates three editable .docx files + a ZIP package. Takes a few seconds.</p>
+          </div>
+
         </form>
-      </section>
+      </div>
+      <!-- end .form-column -->
 
-      <section class="panel panel--info">
-        <h2>New to this?</h2>
-        <p>RegionGuard is built for people who are doing their first security assessment — freelancers, startup founders, junior consultants. You don't need to be a compliance expert.</p>
-        <ul>
-          <li><strong>Fill what you know.</strong> Leave optional fields blank if you're unsure.</li>
-          <li><strong>Examples are optional.</strong> Click "Show example" buttons only when you need help.</li>
-          <li><strong>Everything is editable.</strong> The documents we generate are .docx files — your client will review and approve them anyway.</li>
-          <li><strong>Works offline.</strong> No cloud services, no tracking, no AI.</li>
-        </ul>
-      </section>
-    </main>
+      <!-- ── RIGHT: sidebar column ─────────────────────────────────────────── -->
+      <div class="sidebar-column">
+
+        <!-- Live summary panel -->
+        <div class="card--summary">
+          <div class="summary-header">
+            <div class="summary-dot"></div>
+            <h2>Live engagement summary</h2>
+          </div>
+          <div class="summary-body">
+
+            <div class="summary-row">
+              <span class="summary-label">Client</span>
+              <span class="summary-value is-empty" id="sum-client">Enter a client name to start</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+              <span class="summary-label">Engagement type</span>
+              <span class="summary-value is-empty" id="sum-preset">Select a type above</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Target</span>
+              <span class="summary-value is-empty" id="sum-target">e.g., Customer web app on AWS</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+              <span class="summary-label">Assets in scope</span>
+              <div class="summary-tags" id="sum-scope">
+                <span class="summary-value is-empty" style="font-size:0.82rem;">Add URLs, IPs, or cloud assets</span>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Exclusions</span>
+              <div class="summary-tags" id="sum-exclusions">
+                <span class="summary-value is-empty" style="font-size:0.82rem;">Add what should not be tested</span>
+              </div>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+              <span class="summary-label">Environment &amp; access</span>
+              <div class="summary-tags" id="sum-flags">
+                <span class="summary-tag tag--ok">Non-production</span>
+                <span class="summary-tag">Unauthenticated</span>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Location</span>
+              <span class="summary-value is-empty" id="sum-location">Select jurisdiction &amp; cloud provider</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tips panel -->
+        <div class="card card--tip">
+          <p class="tip-heading">New to this?</p>
+          <ul class="tip-list">
+            <li><strong>Start with a quick-start card</strong> — it pre-fills objectives, exclusions, and timing for your engagement type.</li>
+            <li><strong>Fill what you know.</strong> Operational details like environment type and credentials are optional — expand them only if relevant.</li>
+            <li><strong>Everything is editable.</strong> Generated documents are .docx files — your client reviews and approves them anyway.</li>
+            <li><strong>Works offline.</strong> No cloud services, no tracking, no AI.</li>
+          </ul>
+        </div>
+
+      </div>
+      <!-- end .sidebar-column -->
+
+    </div>
+    <!-- end .workspace -->
 
     <footer class="footer">
       <p>Generated engagements are templates. Always review before client delivery.</p>
     </footer>
   </div>
+
+  <script>
+    const presetLibrary = {{ engagement_preset_data | tojson }};
+
+    // ── Element refs ──────────────────────────────────────────────────────────
+    const presetSelect       = document.getElementById('engagement_preset');
+    const objectivesField    = document.getElementById('objectives');
+    const exclusionsField    = document.getElementById('exclusions');
+    const opNotesField       = document.getElementById('operational_notes');
+    const testingWindowField = document.getElementById('testing_window');
+    const advancedToggleBtn  = document.getElementById('advanced-toggle-btn');
+    const advancedSection    = document.getElementById('advanced-section');
+    const exampleButtons     = document.querySelectorAll('.example-btn');
+    const presetCards        = document.querySelectorAll('.preset-card');
+
+    // ── Summary refs ──────────────────────────────────────────────────────────
+    const sumClient     = document.getElementById('sum-client');
+    const sumPreset     = document.getElementById('sum-preset');
+    const sumTarget     = document.getElementById('sum-target');
+    const sumScope      = document.getElementById('sum-scope');
+    const sumExclusions = document.getElementById('sum-exclusions');
+    const sumFlags      = document.getElementById('sum-flags');
+    const sumLocation   = document.getElementById('sum-location');
+
+    // ── Populate preset card descriptions ────────────────────────────────────
+    presetCards.forEach(card => {
+      const key  = card.dataset.preset;
+      const data = presetLibrary[key] || {};
+      const desc = document.getElementById('card-desc-' + key);
+      if (desc && data.description) {
+        desc.textContent = data.description.split('.')[0] + '.';
+      }
+    });
+
+    // ── Preset application ────────────────────────────────────────────────────
+    function populateIfEmpty(value, target) {
+      if (!target.value.trim() && value) target.value = value;
+    }
+
+    function applyPreset(key) {
+      const preset = presetLibrary[key] || {};
+      populateIfEmpty((preset.default_objectives  || []).join('\n'), objectivesField);
+      populateIfEmpty((preset.default_exclusions  || []).join('\n'), exclusionsField);
+      populateIfEmpty(
+        preset.operational_considerations ? preset.operational_considerations.join('\n') : '',
+        opNotesField
+      );
+      populateIfEmpty(preset.recommended_testing_window || '', testingWindowField);
+      updateSummary();
+    }
+
+    function setActiveCard(key) {
+      presetCards.forEach(c => c.classList.toggle('is-active', c.dataset.preset === key));
+    }
+
+    // ── Live summary update ───────────────────────────────────────────────────
+    function setText(el, value, emptyText) {
+      if (value && value.trim()) {
+        el.textContent = value.trim();
+        el.classList.remove('is-empty');
+      } else {
+        el.textContent = emptyText;
+        el.classList.add('is-empty');
+      }
+    }
+
+    function buildTags(el, text, emptyText, tagClass) {
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      el.innerHTML = '';
+      if (!lines.length) {
+        el.innerHTML = `<span class="summary-value is-empty" style="font-size:0.82rem;">${emptyText}</span>`;
+        return;
+      }
+      lines.slice(0, 4).forEach(line => {
+        const tag = document.createElement('span');
+        tag.className = 'summary-tag' + (tagClass ? ' ' + tagClass : '');
+        tag.textContent = line.length > 28 ? line.slice(0, 26) + '\u2026' : line;
+        el.appendChild(tag);
+      });
+      if (lines.length > 4) {
+        const more = document.createElement('span');
+        more.className = 'summary-tag';
+        more.textContent = '+' + (lines.length - 4) + ' more';
+        el.appendChild(more);
+      }
+    }
+
+    function updateSummary() {
+      setText(sumClient, document.getElementById('client_name').value, 'Enter a client name to start');
+
+      const selOpt = presetSelect.options[presetSelect.selectedIndex];
+      setText(sumPreset, selOpt ? selOpt.text : '', 'Select a type above');
+      setActiveCard(presetSelect.value);
+
+      setText(sumTarget, document.getElementById('target_type').value, 'e.g., Customer web app on AWS');
+
+      buildTags(sumScope, document.getElementById('scope_assets').value, 'Add URLs, IPs, or cloud assets');
+      buildTags(sumExclusions, document.getElementById('exclusions').value, 'Add what should not be tested', 'tag--warn');
+
+      const prodEl  = document.getElementById('production_environment');
+      const authEl  = document.getElementById('authentication_provided');
+      const isProd  = prodEl  && prodEl.value  === 'yes';
+      const hasAuth = authEl  && authEl.value  === 'yes';
+      sumFlags.innerHTML = '';
+      const prodTag = document.createElement('span');
+      prodTag.className = 'summary-tag' + (isProd ? ' tag--warn' : ' tag--ok');
+      prodTag.textContent = isProd ? 'Production' : 'Non-production';
+      sumFlags.appendChild(prodTag);
+      const authTag = document.createElement('span');
+      authTag.className = 'summary-tag' + (hasAuth ? ' tag--ok' : '');
+      authTag.textContent = hasAuth ? 'Auth provided' : 'Unauthenticated';
+      sumFlags.appendChild(authTag);
+
+      const jEl  = document.getElementById('jurisdiction');
+      const cEl  = document.getElementById('cloud_provider');
+      const jOpt = jEl && jEl.options[jEl.selectedIndex];
+      const cOpt = cEl && cEl.options[cEl.selectedIndex];
+      const loc  = [jOpt && jOpt.text, cOpt && cOpt.text].filter(Boolean).join(' \u00b7 ');
+      setText(sumLocation, loc, 'Select jurisdiction & cloud provider');
+    }
+
+    // ── Example buttons ───────────────────────────────────────────────────────
+    exampleButtons.forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const field = document.getElementById(btn.dataset.field);
+        if (field.value.trim() === '') {
+          field.value = btn.dataset.examples;
+          btn.textContent = 'Clear example';
+        } else {
+          field.value = '';
+          btn.textContent = 'Show example';
+        }
+        field.focus();
+        updateSummary();
+      });
+    });
+
+    // ── Preset card clicks ────────────────────────────────────────────────────
+    presetCards.forEach(card => {
+      card.addEventListener('click', () => {
+        presetSelect.value = card.dataset.preset;
+        applyPreset(card.dataset.preset);
+        document.getElementById('client_name').focus();
+      });
+    });
+
+    // ── Preset select change ──────────────────────────────────────────────────
+    presetSelect.addEventListener('change', e => applyPreset(e.target.value));
+
+    // ── Advanced toggle ───────────────────────────────────────────────────────
+    advancedToggleBtn.addEventListener('click', e => {
+      e.preventDefault();
+      const hidden = advancedSection.style.display === 'none';
+      advancedSection.style.display = hidden ? 'block' : 'none';
+      advancedToggleBtn.textContent = hidden
+        ? '\u2212 Hide operational details'
+        : '+ Operational details \u2014 environment, access & timing (optional)';
+    });
+
+    // ── Live summary listeners ────────────────────────────────────────────────
+    ['client_name','target_type','scope_assets','objectives','exclusions',
+     'production_environment','authentication_provided','jurisdiction','cloud_provider',
+     'engagement_preset'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input',  updateSummary);
+      if (el) el.addEventListener('change', updateSummary);
+    });
+
+    // ── Auto-open advanced section if it has errors or repopulated values ─────
+    const advancedFields = ['production_environment','authentication_provided',
+                            'testing_window','operational_notes'];
+    const hasAdvancedErrors = {{ 'true' if field_errors and (
+      field_errors.production_environment or
+      field_errors.authentication_provided or
+      field_errors.testing_window or
+      field_errors.operational_notes
+    ) else 'false' }};
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      if (hasAdvancedErrors) {
+        advancedSection.style.display = 'block';
+        advancedToggleBtn.textContent = '\u2212 Hide operational details';
+      }
+      applyPreset(presetSelect.value);
+      updateSummary();
+    });
+  </script>
 </body>
 </html>

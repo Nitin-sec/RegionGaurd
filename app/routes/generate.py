@@ -1,7 +1,8 @@
 from datetime import date
 
-from fastapi import APIRouter, Form, HTTPException
+from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse
+from pydantic import ValidationError
 
 from ..config import settings
 from ..schemas.engagement import EngagementRequest
@@ -23,6 +24,7 @@ export_service = ExportService(settings.package_dir)
 
 @router.post("/generate", response_class=HTMLResponse, tags=["generate"])
 def generate_summary(
+    request: Request,
     client_name: str = Form(...),
     jurisdiction: str = Form(...),
     engagement_preset: str = Form(...),
@@ -30,13 +32,28 @@ def generate_summary(
     objectives: str = Form(...),
     scope_assets: str = Form(...),
     exclusions: str = Form(...),
-    production_environment: str = Form(...),
-    authentication_provided: str = Form(...),
+    production_environment: str = Form(""),
+    authentication_provided: str = Form(""),
     operational_notes: str = Form(""),
     cloud_provider: str = Form(...),
     testing_window: str = Form(""),
 ):
     """Build and render a deterministic engagement briefing page from structured form inputs."""
+    # Collect the raw form values so we can repopulate on validation failure
+    form_values = {
+        "client_name": client_name,
+        "jurisdiction": jurisdiction,
+        "engagement_preset": engagement_preset,
+        "target_type": target_type,
+        "objectives": objectives,
+        "scope_assets": scope_assets,
+        "exclusions": exclusions,
+        "production_environment": production_environment,
+        "authentication_provided": authentication_provided,
+        "operational_notes": operational_notes,
+        "cloud_provider": cloud_provider,
+        "testing_window": testing_window,
+    }
     try:
         request_data = EngagementRequest(
             client_name=client_name,
@@ -78,6 +95,26 @@ def generate_summary(
                 "package_file": package_file.name,
             },
         )
+
+    except ValidationError as exc:
+        # Map pydantic field errors back to the form as human-readable messages
+        field_errors = {}
+        for err in exc.errors():
+            field = err["loc"][-1] if err["loc"] else "__root__"
+            field_errors[str(field)] = err["msg"]
+        yaml_loader.load_all()
+        return template_engine.render(
+            "html/index.html",
+            {
+                "jurisdictions": yaml_loader.list_jurisdictions(),
+                "cloud_providers": yaml_loader.list_cloud_providers(),
+                "engagement_presets": yaml_loader.list_engagement_presets(),
+                "engagement_preset_data": yaml_loader._ensure_section("engagement_presets"),
+                "field_errors": field_errors,
+                "form_values": form_values,
+            },
+        )
+
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except Exception as exc:
